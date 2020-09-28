@@ -21,6 +21,7 @@ onready var tools := [
 	[$LineTool, "linetool", "Shift", "Ctrl", "Alt"],
 	[$RectangleTool, "rectangletool", "Shift", "Ctrl", "Alt"],
 	[$EllipseTool, "ellipsetool", "Shift", "Ctrl", "Alt"],
+	[$Text, "text"],
 ]
 
 

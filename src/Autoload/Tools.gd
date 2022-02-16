@@ -25,7 +25,7 @@ var _tools = {
 	"LineTool": preload("res://src/Tools/LineTool.tscn"),
 	"RectangleTool": preload("res://src/Tools/RectangleTool.tscn"),
 	"EllipseTool": preload("res://src/Tools/EllipseTool.tscn"),
-	"Text": "res://src/Tools/Text.tscn",
+	"Text": preload("res://src/Tools/Text.tscn"),
 }
 var _slots = {}
 var _panels = {}

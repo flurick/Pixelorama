@@ -78,6 +78,8 @@ func _input(event: InputEvent) -> void:
 
 	Tools.handle_draw(current_pixel.floor(), event)
 
+
+func _process(delta):
 	if sprite_changed_this_frame:
 		update_selected_cels_textures()
 

@@ -35,8 +35,9 @@ func set_config(config: Dictionary) -> void:
 
 
 func draw_start(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_start(position)
-	if Input.is_action_pressed("alt"):
+	if Input.is_action_pressed("draw_color_picker"):
 		_picking_color = true
 		_pick_color(position)
 		return
@@ -50,8 +51,11 @@ func draw_start(position: Vector2) -> void:
 	prepare_undo("Draw")
 	_drawer.reset()
 
-	_draw_line = Tools.shift
+	_draw_line = Input.is_action_pressed("draw_create_line")
 	if _draw_line:
+		if Global.mirror_view:
+			# mirroring position is ONLY required by "Preview"
+			position.x = (Global.current_project.size.x - 1) - position.x
 		_line_start = position
 		_line_end = position
 		update_line_polylines(_line_start, _line_end)
@@ -63,14 +67,18 @@ func draw_start(position: Vector2) -> void:
 
 
 func draw_move(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_move(position)
 	if _picking_color:  # Still return even if we released Alt
-		if Input.is_action_pressed("alt"):
+		if Input.is_action_pressed("draw_color_picker"):
 			_pick_color(position)
 		return
 
 	if _draw_line:
-		var d = _line_angle_constraint(_line_start, position)
+		if Global.mirror_view:
+			# mirroring position is ONLY required by "Preview"
+			position.x = (Global.current_project.size.x - 1) - position.x
+		var d := _line_angle_constraint(_line_start, position)
 		_line_end = d.position
 		cursor_text = d.text
 		update_line_polylines(_line_start, _line_end)
@@ -82,11 +90,16 @@ func draw_move(position: Vector2) -> void:
 
 
 func draw_end(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_end(position)
 	if _picking_color:
 		return
 
 	if _draw_line:
+		if Global.mirror_view:
+			# now we revert back the coordinates from their mirror form so that line can be drawn
+			_line_start.x = (Global.current_project.size.x - 1) - _line_start.x
+			_line_end.x = (Global.current_project.size.x - 1) - _line_end.x
 		draw_tool(_line_start)
 		draw_fill_gap(_line_start, _line_end)
 		_draw_line = false
@@ -124,8 +137,7 @@ func _on_Opacity_value_changed(value: float) -> void:
 
 func update_config() -> void:
 	.update_config()
-	$Opacity/OpacitySpinBox.value = _strength * 255
-	$Opacity/OpacitySlider.value = _strength * 255
+	$OpacitySlider.value = _strength * 255
 
 
 func update_brush() -> void:

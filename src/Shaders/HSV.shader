@@ -1,13 +1,10 @@
-
 shader_type canvas_item;
 render_mode unshaded;
 
-uniform float hue_shift_amount : hint_range(-1, 1);
-uniform float sat_shift_amount : hint_range(-1, 1);
-uniform float val_shift_amount : hint_range(-1, 1);
+uniform float hue_shift : hint_range(-1, 1);
+uniform float sat_shift : hint_range(-1, 1);
+uniform float val_shift : hint_range(-1, 1);
 uniform sampler2D selection;
-uniform bool affect_selection;
-uniform bool has_selection;
 
 vec3 rgb2hsb(vec3 c){
 	vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -43,29 +40,23 @@ void fragment() {
 	// If not greyscale
 	if(col[0] != col[1] || col[1] != col[2]) {
 		// Shift the color by shift_amount, but rolling over the value goes over 1
-		hsb.x = mod(hsb.x + hue_shift_amount, 1.0);
+		hsb.x = mod(hsb.x + hue_shift, 1.0);
 	}
-	if(sat_shift_amount > 0.0) {
-		hsb.y =  mix(hsb.y, 1 , sat_shift_amount);
+	if(sat_shift > 0.0) {
+		hsb.y =  mix(hsb.y, 1 , sat_shift);
 	}
-	else if (sat_shift_amount < 0.0) {
-		hsb.y =  mix(0, hsb.y , 1f - abs(sat_shift_amount));
-	}
-
-	if(val_shift_amount > 0.0) {
-		hsb.z =  mix(hsb.z, 1 , val_shift_amount);
-	}
-	else if (val_shift_amount < 0.0) {
-		hsb.z =  mix(0, hsb.z , 1f - abs(val_shift_amount));
+	else if (sat_shift < 0.0) {
+		hsb.y =  mix(0, hsb.y , 1.0 - abs(sat_shift));
 	}
 
+	if(val_shift > 0.0) {
+		hsb.z =  mix(hsb.z, 1 , val_shift);
+	}
+	else if (val_shift < 0.0) {
+		hsb.z =  mix(0, hsb.z , 1.0 - abs(val_shift));
+	}
 	
 	col = hsb2rgb(hsb);
-	vec3 output;
-	if(affect_selection && has_selection)
-		output = mix(original_color.rgb, col, selection_color.a);
-	else
-		output = col;
+	vec3 output = mix(original_color.rgb, col, selection_color.a);
 	COLOR = vec4(output.rgb, original_color.a);
-
 }

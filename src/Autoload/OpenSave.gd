@@ -1,9 +1,12 @@
+# gdlint: ignore=max-public-methods
 extends Node
 
 var current_save_paths := []  # Array of strings
 # Stores a filename of a backup file in user:// until user saves manually
 var backup_save_paths := []  # Array of strings
 var preview_dialog_tscn = preload("res://src/UI/Dialogs/PreviewDialog.tscn")
+var preview_dialogs := []  # Array of preview dialogs
+var last_dialog_option: int = 0
 
 onready var autosave_timer: Timer
 
@@ -17,47 +20,97 @@ func _ready() -> void:
 	update_autosave()
 
 
-func handle_loading_files(files: PoolStringArray) -> void:
-	for file in files:
-		file = file.replace("\\", "/")
-		var file_ext: String = file.get_extension().to_lower()
-		if file_ext == "pxo":  # Pixelorama project file
-			open_pxo_file(file)
+func handle_loading_file(file: String) -> void:
+	file = file.replace("\\", "/")
+	var file_ext: String = file.get_extension().to_lower()
+	if file_ext == "pxo":  # Pixelorama project file
+		open_pxo_file(file)
 
-		elif file_ext == "tres":  # Godot resource file
-			var resource = load(file)
-			if resource is Palette:
-				Palettes.import_palette(resource, file.get_file())
-			else:
-				var file_name: String = file.get_file()
-				Global.error_dialog.set_text(tr("Can't load file '%s'.") % [file_name])
-				Global.error_dialog.popup_centered()
-				Global.dialog_open(true)
+	elif file_ext == "tres":  # Godot resource file
+		var resource = load(file)
+		if resource is Palette:
+			Palettes.import_palette(resource, file.get_file())
+		else:
+			var file_name: String = file.get_file()
+			Global.error_dialog.set_text(tr("Can't load file '%s'.") % [file_name])
+			Global.error_dialog.popup_centered()
+			Global.dialog_open(true)
 
-		elif file_ext == "gpl" or file_ext == "pal" or file_ext == "json":
-			Palettes.import_palette_from_path(file)
+	elif file_ext == "gpl" or file_ext == "pal" or file_ext == "json":
+		Palettes.import_palette_from_path(file)
 
-		else:  # Image files
-			var image := Image.new()
-			var err := image.load(file)
-			if err != OK:  # An error occured
-				var file_name: String = file.get_file()
-				Global.error_dialog.set_text(
-					tr("Can't load file '%s'.\nError code: %s") % [file_name, str(err)]
-				)
-				Global.error_dialog.popup_centered()
-				Global.dialog_open(true)
-				continue
-			handle_loading_image(file, image)
+	elif file_ext in ["pck", "zip"]:  # Godot resource pack file
+		Global.preferences_dialog.extensions.install_extension(file)
+
+	elif file_ext == "shader" or file_ext == "gdshader":  # Godot shader file
+		var shader = load(file)
+		if !shader is Shader:
+			return
+		var file_name: String = file.get_file().get_basename()
+		Global.control.find_node("ShaderEffect").change_shader(shader, file_name)
+
+	else:  # Image files
+		# Attempt to load as APNG.
+		# Note that the APNG importer will *only* succeed for *animated* PNGs.
+		# This is intentional as still images should still act normally.
+		var apng_res := AImgIOAPNGImporter.load_from_file(file)
+		if apng_res[0] == null:
+			# No error - this is an APNG!
+			handle_loading_aimg(file, apng_res[1])
+			return
+		# Attempt to load as a regular image.
+		var image := Image.new()
+		var err := image.load(file)
+		if err != OK:  # An error occurred
+			var file_name: String = file.get_file()
+			Global.error_dialog.set_text(
+				tr("Can't load file '%s'.\nError code: %s") % [file_name, str(err)]
+			)
+			Global.error_dialog.popup_centered()
+			Global.dialog_open(true)
+			return
+		handle_loading_image(file, image)
 
 
 func handle_loading_image(file: String, image: Image) -> void:
 	var preview_dialog: ConfirmationDialog = preview_dialog_tscn.instance()
+	preview_dialogs.append(preview_dialog)
 	preview_dialog.path = file
 	preview_dialog.image = image
 	Global.control.add_child(preview_dialog)
 	preview_dialog.popup_centered()
 	Global.dialog_open(true)
+
+
+# For loading the output of AImgIO as a project
+func handle_loading_aimg(path: String, frames: Array) -> void:
+	var project := Project.new([], path.get_file(), frames[0].content.get_size())
+	project.layers.append(PixelLayer.new(project))
+	Global.projects.append(project)
+
+	# Determine FPS as 1, unless all frames agree.
+	project.fps = 1
+	var first_duration = frames[0].duration
+	var frames_agree = true
+	for v in frames:
+		var aimg_frame: AImgIOFrame = v
+		if aimg_frame.duration != first_duration:
+			frames_agree = false
+			break
+	if frames_agree and (first_duration > 0.0):
+		project.fps = 1.0 / first_duration
+	# Convert AImgIO frames to Pixelorama frames
+	for v in frames:
+		var aimg_frame: AImgIOFrame = v
+		var frame := Frame.new()
+		if not frames_agree:
+			frame.duration = aimg_frame.duration * project.fps
+		var content := aimg_frame.content
+		content.convert(Image.FORMAT_RGBA8)
+		frame.cels.append(PixelCel.new(content, 1))
+		project.frames.append(frame)
+
+	set_new_imported_tab(project, path)
 
 
 func open_pxo_file(path: String, untitled_backup: bool = false, replace_empty: bool = true) -> void:
@@ -97,11 +150,7 @@ func open_pxo_file(path: String, untitled_backup: bool = false, replace_empty: b
 		new_project.deserialize(dict.result)
 		for frame in new_project.frames:
 			for cel in frame.cels:
-				var buffer := file.get_buffer(new_project.size.x * new_project.size.y * 4)
-				cel.image.create_from_data(
-					new_project.size.x, new_project.size.y, false, Image.FORMAT_RGBA8, buffer
-				)
-				cel.image = cel.image  # Just to call image_changed
+				cel.load_image_data_from_pxo(file, new_project.size)
 
 		if dict.result.has("brushes"):
 			for brush in dict.result.brushes:
@@ -113,15 +162,25 @@ func open_pxo_file(path: String, untitled_backup: bool = false, replace_empty: b
 				new_project.brushes.append(image)
 				Brushes.add_project_brush(image)
 
+		if dict.result.has("tile_mask") and dict.result.has("has_mask"):
+			if dict.result.has_mask:
+				var t_width = dict.result.tile_mask.size_x
+				var t_height = dict.result.tile_mask.size_y
+				var buffer := file.get_buffer(t_width * t_height * 4)
+				var image := Image.new()
+				image.create_from_data(t_width, t_height, false, Image.FORMAT_RGBA8, buffer)
+				new_project.tiles.tile_mask = image
+			else:
+				new_project.tiles.reset_mask()
+
 	file.close()
-	if !empty_project:
+	if empty_project:
+		new_project.change_project()
+		Global.emit_signal("project_changed")
+		Global.emit_signal("cel_changed")
+	else:
 		Global.projects.append(new_project)
 		Global.tabs.current_tab = Global.tabs.get_tab_count() - 1
-	else:
-		if dict.error == OK and dict.result.has("fps"):
-			Global.animation_timeline.fps_spinbox.value = dict.result.fps
-		new_project.frames = new_project.frames  # Just to call frames_changed
-		new_project.layers = new_project.layers  # Just to call layers_changed
 	Global.canvas.camera_zoom()
 
 	if not untitled_backup:
@@ -132,13 +191,13 @@ func open_pxo_file(path: String, untitled_backup: bool = false, replace_empty: b
 		# Set last opened project path and save
 		Global.config_cache.set_value("preferences", "last_project_path", path)
 		Global.config_cache.save("user://cache.ini")
-		Export.file_name = path.get_file().trim_suffix(".pxo")
-		Export.directory_path = path.get_base_dir()
-		new_project.directory_path = Export.directory_path
-		new_project.file_name = Export.file_name
-		Export.was_exported = false
-		Global.top_menu_container.file_menu.set_item_text(4, tr("Save") + " %s" % path.get_file())
-		Global.top_menu_container.file_menu.set_item_text(6, tr("Export"))
+		new_project.directory_path = path.get_base_dir()
+		new_project.file_name = path.get_file().trim_suffix(".pxo")
+		new_project.was_exported = false
+		Global.top_menu_container.file_menu.set_item_text(
+			Global.FileMenu.SAVE, tr("Save") + " %s" % path.get_file()
+		)
+		Global.top_menu_container.file_menu.set_item_text(Global.FileMenu.EXPORT, tr("Export"))
 
 	save_project_to_recent_list(path)
 
@@ -153,8 +212,8 @@ func open_old_pxo_file(file: File, new_project: Project, first_line: String) -> 
 	# In the above example, the major version would return "0",
 	# the minor version would return "7", the patch "10"
 	# and the status would return "beta"
-	var file_major_version = int(file_ver_splitted_numbers[0].replace("v", ""))
-	var file_minor_version = int(file_ver_splitted_numbers[1])
+	var file_major_version := int(file_ver_splitted_numbers[0].replace("v", ""))
+	var file_minor_version := int(file_ver_splitted_numbers[1])
 	var file_patch_version := 0
 
 	if file_ver_splitted_numbers.size() > 2:
@@ -172,17 +231,21 @@ func open_old_pxo_file(file: File, new_project: Project, first_line: String) -> 
 
 	var frame := 0
 
-	var linked_cels := []
+	var layer_dicts := []
 	if file_major_version >= 0 and file_minor_version > 6:
 		var global_layer_line := file.get_line()
 		while global_layer_line == ".":
-			var layer_name := file.get_line()
-			var layer_visibility := file.get_8()
-			var layer_lock := file.get_8()
-			var layer_new_cels_linked := file.get_8()
-			linked_cels.append(file.get_var())
-
-			var l := Layer.new(layer_name, layer_visibility, layer_lock, layer_new_cels_linked, [])
+			layer_dicts.append(
+				{
+					"name": file.get_line(),
+					"visible": file.get_8(),
+					"locked": file.get_8(),
+					"new_cels_linked": file.get_8(),
+					"linked_cels": file.get_var()
+				}
+			)
+			var l := PixelLayer.new(new_project)
+			l.index = new_project.layers.size()
 			new_project.layers.append(l)
 			global_layer_line = file.get_line()
 
@@ -199,21 +262,15 @@ func open_old_pxo_file(file: File, new_project: Project, first_line: String) -> 
 			if file_major_version == 0 and file_minor_version < 7:
 				var layer_name_old_version = file.get_line()
 				if frame == 0:
-					var l := Layer.new(layer_name_old_version)
+					var l := PixelLayer.new(new_project, layer_name_old_version)
+					l.index = layer_i
 					new_project.layers.append(l)
 			var cel_opacity := 1.0
 			if file_major_version >= 0 and file_minor_version > 5:
 				cel_opacity = file.get_float()
 			var image := Image.new()
 			image.create_from_data(width, height, false, Image.FORMAT_RGBA8, buffer)
-			frame_class.cels.append(Cel.new(image, cel_opacity))
-			if file_major_version >= 0 and file_minor_version >= 7:
-				if frame in linked_cels[layer_i]:
-					var linked_cel: Cel = new_project.layers[layer_i].linked_cels[0].cels[layer_i]
-					new_project.layers[layer_i].linked_cels.append(frame_class)
-					frame_class.cels[layer_i].image = linked_cel.image
-					frame_class.cels[layer_i].image_texture = linked_cel.image_texture
-
+			frame_class.cels.append(PixelCel.new(image, cel_opacity))
 			layer_i += 1
 			layer_line = file.get_line()
 
@@ -237,6 +294,11 @@ func open_old_pxo_file(file: File, new_project: Project, first_line: String) -> 
 		new_project.frames.append(frame_class)
 		frame_line = file.get_line()
 		frame += 1
+
+	if layer_dicts:
+		for layer_i in new_project.layers.size():
+			# Now that we have the layers, frames, and cels, deserialize layer data
+			new_project.layers[layer_i].deserialize(layer_dicts[layer_i])
 
 	if new_guides:
 		var guide_line := file.get_line()  # "guideline" no pun intended
@@ -297,7 +359,7 @@ func save_pxo_file(
 ) -> void:
 	if !autosave:
 		project.name = path.get_file()
-	var serialized_data = project.serialize()
+	var serialized_data := project.serialize()
 	if !serialized_data:
 		Global.error_dialog.set_text(
 			tr("File failed to save. Converting project data to dictionary failed.")
@@ -305,7 +367,7 @@ func save_pxo_file(
 		Global.error_dialog.popup_centered()
 		Global.dialog_open(true)
 		return
-	var to_save = JSON.print(serialized_data)
+	var to_save := JSON.print(serialized_data)
 	if !to_save:
 		Global.error_dialog.set_text(
 			tr("File failed to save. Converting dictionary to JSON failed.")
@@ -314,12 +376,19 @@ func save_pxo_file(
 		Global.dialog_open(true)
 		return
 
-	var file: File = File.new()
-	var err
+	# Check if a file with the same name exists. If it does, rename the new file temporarily.
+	# Needed in case of a crash, so that the old file won't be replaced with an empty one.
+	var temp_path := path
+	var dir := Directory.new()
+	if dir.file_exists(path):
+		temp_path = path + "1"
+
+	var file := File.new()
+	var err: int
 	if use_zstd_compression:
-		err = file.open_compressed(path, File.WRITE, File.COMPRESSION_ZSTD)
+		err = file.open_compressed(temp_path, File.WRITE, File.COMPRESSION_ZSTD)
 	else:
-		err = file.open(path, File.WRITE)
+		err = file.open(temp_path, File.WRITE)
 
 	if err != OK:
 		Global.error_dialog.set_text(tr("File failed to save. Error code %s") % err)
@@ -334,22 +403,27 @@ func save_pxo_file(
 	file.store_line(to_save)
 	for frame in project.frames:
 		for cel in frame.cels:
-			file.store_buffer(cel.image.get_data())
-
+			cel.save_image_data_to_pxo(file)
 	for brush in project.brushes:
 		file.store_buffer(brush.get_data())
+	if project.tiles.has_mask:
+		file.store_buffer(project.tiles.tile_mask.get_data())
 
 	file.close()
 
+	if temp_path != path:
+		# Rename the new file to its proper name and remove the old file, if it exists.
+		dir.rename(temp_path, path)
+
 	if OS.get_name() == "HTML5" and OS.has_feature("JavaScript") and !autosave:
 		err = file.open(path, File.READ)
-		if !err:
-			var file_data = Array(file.get_buffer(file.get_len()))
+		if err == OK:
+			var file_data := Array(file.get_buffer(file.get_len()))
 			JavaScript.download_buffer(file_data, path.get_file())
 		file.close()
 		# Remove the .pxo file from memory, as we don't need it anymore
-		var dir = Directory.new()
-		dir.remove(path)
+		var browser_dir := Directory.new()
+		browser_dir.remove(path)
 
 	if autosave:
 		Global.notification_label("File autosaved")
@@ -364,31 +438,32 @@ func save_pxo_file(
 		# Set last opened project path and save
 		Global.config_cache.set_value("preferences", "last_project_path", path)
 		Global.config_cache.save("user://cache.ini")
-		Export.file_name = path.get_file().trim_suffix(".pxo")
-		Export.directory_path = path.get_base_dir()
-		Export.was_exported = false
-		project.was_exported = false
-		Global.top_menu_container.file_menu.set_item_text(4, tr("Save") + " %s" % path.get_file())
+		if !project.was_exported:
+			project.file_name = path.get_file().trim_suffix(".pxo")
+			project.directory_path = path.get_base_dir()
+		Global.top_menu_container.file_menu.set_item_text(
+			Global.FileMenu.SAVE, tr("Save") + " %s" % path.get_file()
+		)
 
 	save_project_to_recent_list(path)
 
 
 func open_image_as_new_tab(path: String, image: Image) -> void:
-	var project = Project.new([], path.get_file(), image.get_size())
-	project.layers.append(Layer.new())
+	var project := Project.new([], path.get_file(), image.get_size())
+	project.layers.append(PixelLayer.new(project))
 	Global.projects.append(project)
 
 	var frame := Frame.new()
 	image.convert(Image.FORMAT_RGBA8)
-	frame.cels.append(Cel.new(image, 1))
+	frame.cels.append(PixelCel.new(image, 1))
 
 	project.frames.append(frame)
-	set_new_tab(project, path)
+	set_new_imported_tab(project, path)
 
 
 func open_image_as_spritesheet_tab(path: String, image: Image, horiz: int, vert: int) -> void:
-	var project = Project.new([], path.get_file())
-	project.layers.append(Layer.new())
+	var project := Project.new([], path.get_file())
+	project.layers.append(PixelLayer.new(project))
 	Global.projects.append(project)
 	horiz = min(horiz, image.get_size().x)
 	vert = min(vert, image.get_size().y)
@@ -403,190 +478,202 @@ func open_image_as_spritesheet_tab(path: String, image: Image, horiz: int, vert:
 			)
 			project.size = cropped_image.get_size()
 			cropped_image.convert(Image.FORMAT_RGBA8)
-			frame.cels.append(Cel.new(cropped_image, 1))
-
-			for _i in range(1, project.layers.size()):
-				var empty_sprite := Image.new()
-				empty_sprite.create(project.size.x, project.size.y, false, Image.FORMAT_RGBA8)
-				empty_sprite.fill(Color(0, 0, 0, 0))
-				frame.cels.append(Cel.new(empty_sprite, 1))
-
+			frame.cels.append(PixelCel.new(cropped_image, 1))
 			project.frames.append(frame)
-
-	set_new_tab(project, path)
+	set_new_imported_tab(project, path)
 
 
 func open_image_as_spritesheet_layer(
 	_path: String, image: Image, file_name: String, horizontal: int, vertical: int, start_frame: int
 ) -> void:
-	# data needed to slice images
+	# Data needed to slice images
 	horizontal = min(horizontal, image.get_size().x)
 	vertical = min(vertical, image.get_size().y)
 	var frame_width := image.get_size().x / horizontal
 	var frame_height := image.get_size().y / vertical
 
-	# resize canvas to if "frame_width" or "frame_height" is too large
+	# Resize canvas to if "frame_width" or "frame_height" is too large
 	var project: Project = Global.current_project
 	var project_width: int = max(frame_width, project.size.x)
 	var project_height: int = max(frame_height, project.size.y)
 	if project.size < Vector2(project_width, project_height):
 		DrawingAlgos.resize_canvas(project_width, project_height, 0, 0)
 
-	#initialize undo mechanism
+	# Initialize undo mechanism
 	project.undos += 1
 	project.undo_redo.create_action("Add Spritesheet Layer")
-	var new_layers: Array = project.layers.duplicate()
-	var new_frames: Array = project.frames.duplicate()
 
-	#Create new frames (if needed)
-	var new_frames_size = start_frame + (vertical * horizontal)
+	# Create new frames (if needed)
+	var new_frames_size = max(project.frames.size(), start_frame + (vertical * horizontal))
+	var frames := []
+	var frame_indices := []
 	if new_frames_size > project.frames.size():
 		var required_frames = new_frames_size - project.frames.size()
+		frame_indices = range(
+			project.current_frame + 1, project.current_frame + required_frames + 1
+		)
 		for i in required_frames:
-			var frame: Frame = project.new_empty_frame()
-			new_frames.insert(project.current_frame + 1, frame)
-	#Create new layer for spritesheet
-	var layer := Layer.new(file_name)
-	new_layers.append(layer)
-	for f in new_frames:
-		var new_layer := Image.new()
-		new_layer.create(project.size.x, project.size.y, false, Image.FORMAT_RGBA8)
-		f.cels.append(Cel.new(new_layer, 1))
+			var new_frame := Frame.new()
+			for l in range(project.layers.size()):  # Create as many cels as there are layers
+				new_frame.cels.append(project.layers[l].new_empty_cel())
+				if project.layers[l].new_cels_linked:
+					var prev_cel: BaseCel = project.frames[project.current_frame].cels[l]
+					if prev_cel.link_set == null:
+						prev_cel.link_set = {}
+						project.undo_redo.add_do_method(
+							project.layers[l], "link_cel", prev_cel, prev_cel.link_set
+						)
+						project.undo_redo.add_undo_method(
+							project.layers[l], "link_cel", prev_cel, null
+						)
+					new_frame.cels[l].set_content(prev_cel.get_content(), prev_cel.image_texture)
+					new_frame.cels[l].link_set = prev_cel.link_set
+			frames.append(new_frame)
 
-	# slice spritesheet
-	var image_no: int = 0
-	for yy in range(vertical):
-		for xx in range(horizontal):
+	# Create new layer for spritesheet
+	var layer := PixelLayer.new(project, file_name)
+	var cels := []
+	for f in new_frames_size:
+		if f >= start_frame and f < (start_frame + (vertical * horizontal)):
+			# Slice spritesheet
+			var xx: int = (f - start_frame) % horizontal
+			var yy: int = (f - start_frame) / horizontal
 			var cropped_image := Image.new()
 			cropped_image = image.get_rect(
 				Rect2(frame_width * xx, frame_height * yy, frame_width, frame_height)
 			)
 			cropped_image.crop(project.size.x, project.size.y)
-			var layer_index = new_layers.size() - 1
-			var frame_index = start_frame + image_no
+			cropped_image.convert(Image.FORMAT_RGBA8)
+			cels.append(PixelCel.new(cropped_image))
+		else:
+			cels.append(layer.new_empty_cel())
 
-			for i in new_frames.size():
-				if i == frame_index:
-					cropped_image.convert(Image.FORMAT_RGBA8)
-					new_frames[i].cels[layer_index] = (Cel.new(cropped_image, 1))
-			image_no += 1
-
-	project.undo_redo.add_do_property(project, "current_frame", new_frames.size() - 1)
-	project.undo_redo.add_do_property(project, "current_layer", project.layers.size())
-	project.undo_redo.add_do_property(project, "layers", new_layers)
-	project.undo_redo.add_do_property(project, "frames", new_frames)
-	project.undo_redo.add_undo_property(project, "current_layer", project.current_layer)
-	project.undo_redo.add_undo_property(project, "current_frame", project.current_frame)
-	project.undo_redo.add_undo_property(project, "layers", project.layers)
-	project.undo_redo.add_undo_property(project, "frames", project.frames)
+	project.undo_redo.add_do_method(project, "add_frames", frames, frame_indices)
+	project.undo_redo.add_do_method(project, "add_layers", [layer], [project.layers.size()], [cels])
+	project.undo_redo.add_do_method(
+		project, "change_cel", new_frames_size - 1, project.layers.size()
+	)
 	project.undo_redo.add_do_method(Global, "undo_or_redo", false)
+
+	project.undo_redo.add_undo_method(project, "remove_layers", [project.layers.size()])
+	project.undo_redo.add_undo_method(project, "remove_frames", frame_indices)
+	project.undo_redo.add_undo_method(
+		project, "change_cel", project.current_frame, project.current_layer
+	)
 	project.undo_redo.add_undo_method(Global, "undo_or_redo", true)
 	project.undo_redo.commit_action()
 
 
-func open_image_at_frame(image: Image, layer_index := 0, frame_index := 0) -> void:
-	var project = Global.current_project
-	image.crop(project.size.x, project.size.y)
-
+func open_image_at_cel(image: Image, layer_index := 0, frame_index := 0) -> void:
+	var project: Project = Global.current_project
+	var project_width: int = max(image.get_width(), project.size.x)
+	var project_height: int = max(image.get_height(), project.size.y)
+	if project.size < Vector2(project_width, project_height):
+		DrawingAlgos.resize_canvas(project_width, project_height, 0, 0)
 	project.undos += 1
-	project.undo_redo.create_action("Replaced Frame")
-
-	var frames: Array = []
-	# create a duplicate of "project.frames"
-	for i in project.frames.size():
-		var frame := Frame.new()
-		frame.cels = project.frames[i].cels.duplicate(true)
-		frames.append(frame)
+	project.undo_redo.create_action("Replaced Cel")
 
 	for i in project.frames.size():
 		if i == frame_index:
 			image.convert(Image.FORMAT_RGBA8)
-			frames[i].cels[layer_index] = (Cel.new(image, 1))
-			project.undo_redo.add_do_property(project.frames[i], "cels", frames[i].cels)
-			project.undo_redo.add_undo_property(project.frames[i], "cels", project.frames[i].cels)
+			var cel: PixelCel = project.frames[i].cels[layer_index]
+			project.undo_redo.add_do_property(cel, "image", image)
+			project.undo_redo.add_undo_property(cel, "image", cel.image)
 
-	project.undo_redo.add_do_property(project, "frames", frames)
-	project.undo_redo.add_do_property(project, "current_frame", frame_index)
-
-	project.undo_redo.add_undo_property(project, "frames", project.frames)
-	project.undo_redo.add_undo_property(project, "current_frame", project.current_frame)
-
+	project.undo_redo.add_do_property(project, "selected_cels", [])
+	project.undo_redo.add_do_method(project, "change_cel", frame_index, layer_index)
 	project.undo_redo.add_do_method(Global, "undo_or_redo", false)
+
+	project.undo_redo.add_undo_property(project, "selected_cels", [])
+	project.undo_redo.add_undo_method(
+		project, "change_cel", project.current_frame, project.current_layer
+	)
 	project.undo_redo.add_undo_method(Global, "undo_or_redo", true)
 	project.undo_redo.commit_action()
 
 
 func open_image_as_new_frame(image: Image, layer_index := 0) -> void:
-	var project = Global.current_project
-	image.crop(project.size.x, project.size.y)
-	var new_frames: Array = project.frames.duplicate()
+	var project: Project = Global.current_project
+	var project_width: int = max(image.get_width(), project.size.x)
+	var project_height: int = max(image.get_height(), project.size.y)
+	if project.size < Vector2(project_width, project_height):
+		DrawingAlgos.resize_canvas(project_width, project_height, 0, 0)
 
 	var frame := Frame.new()
 	for i in project.layers.size():
 		if i == layer_index:
 			image.convert(Image.FORMAT_RGBA8)
-			frame.cels.append(Cel.new(image, 1))
+			frame.cels.append(PixelCel.new(image, 1))
 		else:
-			var empty_image := Image.new()
-			empty_image.create(project.size.x, project.size.y, false, Image.FORMAT_RGBA8)
-			frame.cels.append(Cel.new(empty_image, 1))
-
-	new_frames.append(frame)
+			frame.cels.append(project.layers[i].new_empty_cel())
 
 	project.undos += 1
 	project.undo_redo.create_action("Add Frame")
 	project.undo_redo.add_do_method(Global, "undo_or_redo", false)
+	project.undo_redo.add_do_method(project, "add_frames", [frame], [project.frames.size()])
+	project.undo_redo.add_do_method(project, "change_cel", project.frames.size(), layer_index)
+
 	project.undo_redo.add_undo_method(Global, "undo_or_redo", true)
-
-	project.undo_redo.add_do_property(project, "frames", new_frames)
-	project.undo_redo.add_do_property(project, "current_frame", new_frames.size() - 1)
-	project.undo_redo.add_do_property(project, "current_layer", layer_index)
-
-	project.undo_redo.add_undo_property(project, "frames", project.frames)
-	project.undo_redo.add_undo_property(project, "current_frame", project.current_frame)
-	project.undo_redo.add_undo_property(project, "current_layer", project.current_layer)
+	project.undo_redo.add_undo_method(project, "remove_frames", [project.frames.size()])
+	project.undo_redo.add_undo_method(
+		project, "change_cel", project.current_frame, project.current_layer
+	)
 	project.undo_redo.commit_action()
 
 
 func open_image_as_new_layer(image: Image, file_name: String, frame_index := 0) -> void:
-	var project = Global.current_project
-	image.crop(project.size.x, project.size.y)
-	var new_layers: Array = Global.current_project.layers.duplicate()
-	var layer := Layer.new(file_name)
+	var project: Project = Global.current_project
+	var project_width: int = max(image.get_width(), project.size.x)
+	var project_height: int = max(image.get_height(), project.size.y)
+	if project.size < Vector2(project_width, project_height):
+		DrawingAlgos.resize_canvas(project_width, project_height, 0, 0)
+	var layer := PixelLayer.new(project, file_name)
+	var cels := []
 
 	Global.current_project.undos += 1
 	Global.current_project.undo_redo.create_action("Add Layer")
 	for i in project.frames.size():
-		var new_cels: Array = project.frames[i].cels.duplicate(true)
 		if i == frame_index:
 			image.convert(Image.FORMAT_RGBA8)
-			new_cels.append(Cel.new(image, 1))
+			cels.append(PixelCel.new(image, 1))
 		else:
-			var empty_image := Image.new()
-			empty_image.create(project.size.x, project.size.y, false, Image.FORMAT_RGBA8)
-			new_cels.append(Cel.new(empty_image, 1))
+			cels.append(layer.new_empty_cel())
 
-		project.undo_redo.add_do_property(project.frames[i], "cels", new_cels)
-		project.undo_redo.add_undo_property(project.frames[i], "cels", project.frames[i].cels)
+	project.undo_redo.add_do_method(project, "add_layers", [layer], [project.layers.size()], [cels])
+	project.undo_redo.add_do_method(project, "change_cel", frame_index, project.layers.size())
 
-	new_layers.append(layer)
-
-	project.undo_redo.add_do_property(project, "current_layer", new_layers.size() - 1)
-	project.undo_redo.add_do_property(project, "layers", new_layers)
-	project.undo_redo.add_do_property(project, "current_frame", frame_index)
-
-	project.undo_redo.add_undo_property(project, "current_layer", project.current_layer)
-	project.undo_redo.add_undo_property(project, "layers", project.layers)
-	project.undo_redo.add_undo_property(project, "current_frame", project.current_frame)
+	project.undo_redo.add_undo_method(project, "remove_layers", [project.layers.size()])
+	project.undo_redo.add_undo_method(
+		project, "change_cel", project.current_frame, project.current_layer
+	)
 
 	project.undo_redo.add_undo_method(Global, "undo_or_redo", true)
 	project.undo_redo.add_do_method(Global, "undo_or_redo", false)
 	project.undo_redo.commit_action()
 
 
-func set_new_tab(project: Project, path: String) -> void:
-	Global.tabs.current_tab = Global.tabs.get_tab_count() - 1
-	Global.canvas.camera_zoom()
+func import_reference_image_from_path(path: String) -> void:
+	var project: Project = Global.current_project
+	var ri := ReferenceImage.new()
+	ri.project = project
+	ri.deserialize({"image_path": path})
+	Global.canvas.add_child(ri)
+	project.change_project()
+
+
+# Useful for HTML5
+func import_reference_image_from_image(image: Image) -> void:
+	var project: Project = Global.current_project
+	var ri := ReferenceImage.new()
+	ri.project = project
+	ri.create_from_image(image)
+	Global.canvas.add_child(ri)
+	project.change_project()
+
+
+func set_new_imported_tab(project: Project, path: String) -> void:
+	var prev_project_empty: bool = Global.current_project.is_empty()
+	var prev_project_pos: int = Global.current_project_index
 
 	Global.window_title = (
 		path.get_file()
@@ -598,11 +685,18 @@ func set_new_tab(project: Project, path: String) -> void:
 	if project.has_changed:
 		Global.window_title = Global.window_title + "(*)"
 	var file_name := path.get_basename().get_file()
-	var directory_path := path.get_basename().replace(file_name, "")
+	var directory_path := path.get_base_dir()
 	project.directory_path = directory_path
 	project.file_name = file_name
-	Export.directory_path = directory_path
-	Export.file_name = file_name
+	project.was_exported = true
+	if path.get_extension().to_lower() == "png":
+		project.export_overwrite = true
+
+	Global.tabs.current_tab = Global.tabs.get_tab_count() - 1
+	Global.canvas.camera_zoom()
+
+	if prev_project_empty:
+		Global.tabs.delete_tab(prev_project_pos)
 
 
 func update_autosave() -> void:
@@ -661,7 +755,7 @@ func remove_backup_by_path(project_path: String, backup_path: String) -> void:
 
 func reload_backup_file(project_paths: Array, backup_paths: Array) -> void:
 	assert(project_paths.size() == backup_paths.size())
-	# Clear non-existant backups
+	# Clear non-existent backups
 	var existing_backups_count := 0
 	var dir := Directory.new()
 	for i in range(backup_paths.size()):
@@ -700,7 +794,7 @@ func save_project_to_recent_list(path: String) -> void:
 		return
 
 	if top_menu_container.recent_projects.has(path):
-		return
+		top_menu_container.recent_projects.erase(path)
 
 	if top_menu_container.recent_projects.size() >= 5:
 		top_menu_container.recent_projects.pop_front()
@@ -708,5 +802,5 @@ func save_project_to_recent_list(path: String) -> void:
 
 	Global.config_cache.set_value("data", "recent_projects", top_menu_container.recent_projects)
 
-	Global.top_menu_container.recent_projects_submenu.clear()
+	top_menu_container.recent_projects_submenu.clear()
 	top_menu_container.update_recent_projects_submenu()

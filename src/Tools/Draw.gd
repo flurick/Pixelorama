@@ -2,15 +2,18 @@ extends BaseTool
 
 var _brush := Brushes.get_default_brush()
 var _brush_size := 1
+var _brush_size_dynamics := 1
+var _cache_limit := 3
 var _brush_interpolate := 0
 var _brush_image := Image.new()
+var _orignal_brush_image := Image.new()  # contains the original _brush_image, without resizing
 var _brush_texture := ImageTexture.new()
 var _strength := 1.0
 var _picking_color := false
 
 var _undo_data := {}
 var _drawer := Drawer.new()
-var _mask := PoolByteArray()
+var _mask := PoolRealArray()
 var _mirror_brushes := {}
 
 var _draw_line := false
@@ -21,8 +24,15 @@ var _indicator := BitMap.new()
 var _polylines := []
 var _line_polylines := []
 
+# Memorize some stuff when doing brush strokes
+var _stroke_project: Project
+var _stroke_images := []  # Array of Images
+var _is_mask_size_zero := true
+var _circle_tool_shortcut: PoolVector2Array
+
 
 func _ready() -> void:
+	Global.global_tool_options.connect("dynamics_changed", self, "_reset_dynamics")
 	Tools.connect("color_changed", self, "_on_Color_changed")
 	Global.brushes_popup.connect("brush_removed", self, "_on_Brush_removed")
 
@@ -32,7 +42,18 @@ func _on_BrushType_pressed() -> void:
 		Global.brushes_popup.connect(
 			"brush_selected", self, "_on_Brush_selected", [], CONNECT_ONESHOT
 		)
-	Global.brushes_popup.popup(Rect2($Brush/Type.rect_global_position, Vector2(226, 72)))
+	# Now we set position and columns
+	var tool_option_container = get_node("../../")
+	var brush_button = $Brush/Type
+	var pop_position = brush_button.rect_global_position + Vector2(0, brush_button.rect_size.y)
+	var size_x = tool_option_container.rect_size.x
+	var size_y = tool_option_container.rect_size.y - $Brush.rect_position.y - $Brush.rect_size.y
+	var columns = int(size_x / 36) - 1  # 36 is the rect_size of BrushButton.tscn
+	var categories = Global.brushes_popup.get_node("Background/Brushes/Categories")
+	for child in categories.get_children():
+		if child is GridContainer:
+			child.columns = columns
+	Global.brushes_popup.popup(Rect2(pop_position, Vector2(size_x, size_y)))
 
 
 func _on_Brush_selected(brush: Brushes.Brush) -> void:
@@ -42,7 +63,21 @@ func _on_Brush_selected(brush: Brushes.Brush) -> void:
 
 
 func _on_BrushSize_value_changed(value: float) -> void:
-	_brush_size = int(value)
+	if _brush_size != int(value):
+		_brush_size = int(value)
+		_brush_size_dynamics = _brush_size
+		if Tools.dynamics_size != Tools.Dynamics.NONE:
+			_brush_size_dynamics = Tools.brush_size_min
+		_cache_limit = (_brush_size * _brush_size) * 3  # This equation seems the best match
+		update_config()
+		save_config()
+
+
+func _reset_dynamics() -> void:
+	_brush_size_dynamics = _brush_size
+	if Tools.dynamics_size != Tools.Dynamics.NONE:
+		_brush_size_dynamics = Tools.brush_size_min
+	_cache_limit = (_brush_size * _brush_size) * 3  # This equation seems the best match
 	update_config()
 	save_config()
 
@@ -74,37 +109,45 @@ func get_config() -> Dictionary:
 
 
 func set_config(config: Dictionary) -> void:
-	var type = config.get("brush_type", _brush.type)
-	var index = config.get("brush_index", _brush.index)
+	var type: int = config.get("brush_type", _brush.type)
+	var index: int = config.get("brush_index", _brush.index)
 	_brush = Global.brushes_popup.get_brush(type, index)
 	_brush_size = config.get("brush_size", _brush_size)
+	_brush_size_dynamics = _brush_size
+	if Tools.dynamics_size != Tools.Dynamics.NONE:
+		_brush_size_dynamics = Tools.brush_size_min
 	_brush_interpolate = config.get("brush_interpolate", _brush_interpolate)
 
 
 func update_config() -> void:
-	$Brush/Size.value = _brush_size
-	$BrushSize.value = _brush_size
-	$ColorInterpolation/Factor.value = _brush_interpolate
-	$ColorInterpolation/Slider.value = _brush_interpolate
+	$Brush/BrushSize.value = _brush_size
+	$ColorInterpolation.value = _brush_interpolate
 	update_brush()
 
 
 func update_brush() -> void:
+	$Brush/BrushSize.suffix = "px"  # Assume we are using default brushes
 	match _brush.type:
 		Brushes.PIXEL:
 			_brush_texture.create_from_image(load("res://assets/graphics/pixel_image.png"), 0)
+			_stroke_dimensions = Vector2.ONE * _brush_size
 		Brushes.CIRCLE:
 			_brush_texture.create_from_image(load("res://assets/graphics/circle_9x9.png"), 0)
+			_stroke_dimensions = Vector2.ONE * _brush_size
 		Brushes.FILLED_CIRCLE:
 			_brush_texture.create_from_image(load("res://assets/graphics/circle_filled_9x9.png"), 0)
+			_stroke_dimensions = Vector2.ONE * _brush_size
 		Brushes.FILE, Brushes.RANDOM_FILE, Brushes.CUSTOM:
+			$Brush/BrushSize.suffix = "00 %"  # Use a different size convention on images
 			if _brush.random.size() <= 1:
-				_brush_image = _create_blended_brush_image(_brush.image)
+				_orignal_brush_image = _brush.image
 			else:
-				var random = randi() % _brush.random.size()
-				_brush_image = _create_blended_brush_image(_brush.random[random])
+				var random := randi() % _brush.random.size()
+				_orignal_brush_image = _brush.random[random]
+			_brush_image = _create_blended_brush_image(_orignal_brush_image)
 			_brush_texture.create_from_image(_brush_image, 0)
 			update_mirror_brush()
+			_stroke_dimensions = _brush_image.get_size()
 	_indicator = _create_brush_indicator()
 	_polylines = _create_polylines(_indicator)
 	$Brush/Type/Texture.texture = _brush_texture
@@ -131,16 +174,17 @@ func update_mirror_brush() -> void:
 
 
 func update_mask(can_skip := true) -> void:
-	if can_skip and Global.pressure_sensitivity_mode == Global.PressureSensitivity.NONE:
+	if can_skip and Tools.dynamics_alpha == Tools.Dynamics.NONE:
 		if _mask:
-			_mask = PoolByteArray()
+			_mask = PoolRealArray()
 		return
 	var size: Vector2 = Global.current_project.size
+	_is_mask_size_zero = false
 	# Faster than zeroing PoolByteArray directly.
 	# See: https://github.com/Orama-Interactive/Pixelorama/pull/439
 	var nulled_array := []
 	nulled_array.resize(size.x * size.y)
-	_mask = PoolByteArray(nulled_array)
+	_mask = PoolRealArray(nulled_array)
 
 
 func update_line_polylines(start: Vector2, end: Vector2) -> void:
@@ -177,39 +221,118 @@ func commit_undo() -> void:
 
 
 func draw_tool(position: Vector2) -> void:
+	if Global.mirror_view:
+		# Even brushes are not perfectly centred and are offsetted by 1 px so we add it
+		if int(_stroke_dimensions.x) % 2 == 0:
+			position.x += 1
+	_prepare_tool()
+	var coords_to_draw := _draw_tool(position)
+	for coord in coords_to_draw:
+		_set_pixel_no_cache(coord)
+
+
+func draw_end(position: Vector2) -> void:
+	.draw_end(position)
+	_brush_size_dynamics = _brush_size
+	if Tools.dynamics_size != Tools.Dynamics.NONE:
+		_brush_size_dynamics = Tools.brush_size_min
+	match _brush.type:
+		Brushes.FILE, Brushes.RANDOM_FILE, Brushes.CUSTOM:
+			_brush_image = _create_blended_brush_image(_orignal_brush_image)
+			_brush_texture.create_from_image(_brush_image, 0)
+			update_mirror_brush()
+			_stroke_dimensions = _brush_image.get_size()
+	_indicator = _create_brush_indicator()
+	_polylines = _create_polylines(_indicator)
+
+
+func _prepare_tool() -> void:
 	if !Global.current_project.layers[Global.current_project.current_layer].can_layer_get_drawn():
 		return
-	var strength := _strength
-	if Global.pressure_sensitivity_mode == Global.PressureSensitivity.ALPHA:
-		strength *= Tools.pen_pressure
-
-	_drawer.pixel_perfect = tool_slot.pixel_perfect if _brush_size == 1 else false
+	_brush_size_dynamics = _brush_size
+	var strength: float = Tools.get_alpha_dynamic(_strength)
+	if Tools.dynamics_size == Tools.Dynamics.PRESSURE:
+		_brush_size_dynamics = round(
+			lerp(Tools.brush_size_min, Tools.brush_size_max, Tools.pen_pressure)
+		)
+	elif Tools.dynamics_size == Tools.Dynamics.VELOCITY:
+		_brush_size_dynamics = round(
+			lerp(Tools.brush_size_min, Tools.brush_size_max, Tools.mouse_velocity)
+		)
+	_drawer.pixel_perfect = Tools.pixel_perfect if _brush_size == 1 else false
 	_drawer.horizontal_mirror = Tools.horizontal_mirror
 	_drawer.vertical_mirror = Tools.vertical_mirror
 	_drawer.color_op.strength = strength
+	_indicator = _create_brush_indicator()
+	_polylines = _create_polylines(_indicator)
+	# Memorize current project
+	_stroke_project = Global.current_project
+	# Memorize the frame/layer we are drawing on rather than fetching it on every pixel
+	_stroke_images = _get_selected_draw_images()
+	# This may prevent a few tests when setting pixels
+	_is_mask_size_zero = _mask.size() == 0
+	match _brush.type:
+		Brushes.CIRCLE:
+			_prepare_circle_tool(false)
+		Brushes.FILLED_CIRCLE:
+			_prepare_circle_tool(true)
+		Brushes.FILE, Brushes.RANDOM_FILE, Brushes.CUSTOM:
+			# save _brush_image for safe keeping
+			_brush_image = _create_blended_brush_image(_orignal_brush_image)
+			_brush_texture.create_from_image(_brush_image, 0)
+			update_mirror_brush()
+			_stroke_dimensions = _brush_image.get_size()
 
+
+func _prepare_circle_tool(fill: bool) -> void:
+	var circle_tool_map := _create_circle_indicator(_brush_size_dynamics, fill)
+	# Go through that BitMap and build an Array of the "displacement" from the center of the bits
+	# that are true.
+	var diameter := _brush_size_dynamics * 2 + 1
+	for n in range(0, diameter):
+		for m in range(0, diameter):
+			if circle_tool_map.get_bit(Vector2(m, n)):
+				_circle_tool_shortcut.append(
+					Vector2(m - _brush_size_dynamics, n - _brush_size_dynamics)
+				)
+
+
+# Make sure to always have invoked _prepare_tool() before this. This computes the coordinates to be
+# drawn if it can (except for the generic brush, when it's actually drawing them)
+func _draw_tool(position: Vector2) -> PoolVector2Array:
+	if !Global.current_project.layers[Global.current_project.current_layer].can_layer_get_drawn():
+		return PoolVector2Array()  # empty fallback
 	match _brush.type:
 		Brushes.PIXEL:
-			draw_tool_pixel(position)
+			return _compute_draw_tool_pixel(position)
 		Brushes.CIRCLE:
-			draw_tool_circle(position, false)
+			return _compute_draw_tool_circle(position, false)
 		Brushes.FILLED_CIRCLE:
-			draw_tool_circle(position, true)
+			return _compute_draw_tool_circle(position, true)
 		_:
 			draw_tool_brush(position)
+	return PoolVector2Array()  # empty fallback
 
 
 # Bresenham's Algorithm
 # Thanks to https://godotengine.org/qa/35276/tile-based-line-drawing-algorithm-efficiency
 func draw_fill_gap(start: Vector2, end: Vector2) -> void:
+	if Global.mirror_view:
+		# Even brushes are not perfectly centred and are offsetted by 1 px so we add it
+		if int(_stroke_dimensions.x) % 2 == 0:
+			start.x += 1
+			end.x += 1
 	var dx := int(abs(end.x - start.x))
 	var dy := int(-abs(end.y - start.y))
 	var err := dx + dy
 	var e2 := err << 1
-	var sx = 1 if start.x < end.x else -1
-	var sy = 1 if start.y < end.y else -1
-	var x = start.x
-	var y = start.y
+	var sx := 1 if start.x < end.x else -1
+	var sy := 1 if start.y < end.y else -1
+	var x := start.x
+	var y := start.y
+	_prepare_tool()
+	# This needs to be a dictionary to ensure duplicate coordinates are not being added
+	var coords_to_draw := {}
 	while !(x == end.x && y == end.y):
 		e2 = err << 1
 		if e2 >= dy:
@@ -218,80 +341,86 @@ func draw_fill_gap(start: Vector2, end: Vector2) -> void:
 		if e2 <= dx:
 			err += dx
 			y += sy
-		draw_tool(Vector2(x, y))
+		var current_pixel_coord := Vector2(x, y)
+		if _spacing_mode:
+			current_pixel_coord = get_spacing_position(current_pixel_coord)
+		for coord in _draw_tool(current_pixel_coord):
+			coords_to_draw[coord] = 0
+	for c in coords_to_draw.keys():
+		_set_pixel_no_cache(c)
 
 
-func draw_tool_pixel(position: Vector2) -> void:
-	var start := position - Vector2.ONE * (_brush_size >> 1)
-	var end := start + Vector2.ONE * _brush_size
+# Compute the array of coordinates that should be drawn
+func _compute_draw_tool_pixel(position: Vector2) -> PoolVector2Array:
+	var result := PoolVector2Array()
+	var start := position - Vector2.ONE * (_brush_size_dynamics >> 1)
+	var end := start + Vector2.ONE * _brush_size_dynamics
 	for y in range(start.y, end.y):
 		for x in range(start.x, end.x):
-			_set_pixel(Vector2(x, y))
+			result.append(Vector2(x, y))
+	return result
 
 
-# Algorithm based on http://members.chello.at/easyfilter/bresenham.html
-func draw_tool_circle(position: Vector2, fill := false) -> void:
-	var r := _brush_size
-	var x := -r
-	var y := 0
-	var err := 2 - r * 2
-	var draw := true
+# Compute the array of coordinates that should be drawn
+func _compute_draw_tool_circle(position: Vector2, fill := false) -> PoolVector2Array:
+	var size := Vector2(_brush_size_dynamics, _brush_size_dynamics)
+	var pos = position - (size / 2).floor()
+	if _circle_tool_shortcut:
+		return _draw_tool_circle_from_map(position)
+
+	var result := PoolVector2Array()
 	if fill:
-		_set_pixel(position)
-	while x < 0:
-		if draw:
-			for i in range(1 if fill else -x, -x + 1):
-				_set_pixel(position + Vector2(-i, y))
-				_set_pixel(position + Vector2(-y, -i))
-				_set_pixel(position + Vector2(i, -y))
-				_set_pixel(position + Vector2(y, i))
-		draw = not fill
-		r = err
-		if r <= y:
-			y += 1
-			err += y * 2 + 1
-			draw = true
-		if r > x || err > y:
-			x += 1
-			err += x * 2 + 1
+		result = DrawingAlgos.get_ellipse_points_filled(pos, size)
+	else:
+		result = DrawingAlgos.get_ellipse_points(pos, size)
+	return result
 
 
-func draw_tool_brush(position: Vector2) -> void:
+func _draw_tool_circle_from_map(position: Vector2) -> PoolVector2Array:
+	var result := PoolVector2Array()
+	for displacement in _circle_tool_shortcut:
+		result.append(position + displacement)
+	return result
+
+
+func draw_tool_brush(brush_position: Vector2) -> void:
 	var project: Project = Global.current_project
-
-	if project.tile_mode and project.get_tile_mode_rect().has_point(position):
-		position = position.posmodv(project.size)
+	# image brushes work differently, (we have to consider all 8 surrounding points)
+	var central_point = project.tiles.get_canon_position(brush_position)
+	var positions = project.tiles.get_point_in_tiles(central_point)
+	if Global.current_project.has_selection and project.tiles.mode == Tiles.MODE.NONE:
+		positions = Global.current_project.selection_map.get_point_in_tile_mode(central_point)
 
 	var size := _brush_image.get_size()
-	var dst := position - (size / 2).floor()
-	var dst_rect := Rect2(dst, size)
-	var draw_rect := _get_draw_rect()
-	dst_rect = dst_rect.clip(draw_rect)
-	if dst_rect.size == Vector2.ZERO:
-		return
-	var src_rect := Rect2(dst_rect.position - dst, dst_rect.size)
-	dst = dst_rect.position
-	var brush_image: Image = remove_unselected_parts_of_brush(_brush_image, dst)
-	_draw_brush_image(brush_image, src_rect, dst)
+	for i in positions.size():
+		var position: Vector2 = positions[i]
+		var dst: Vector2 = position - (size / 2).floor()
+		var dst_rect := Rect2(dst, size)
+		var draw_rect := _get_draw_rect()
+		dst_rect = dst_rect.clip(draw_rect)
+		if dst_rect.size == Vector2.ZERO:
+			continue
+		var src_rect := Rect2(dst_rect.position - dst, dst_rect.size)
+		var brush_image: Image = remove_unselected_parts_of_brush(_brush_image, dst)
+		dst = dst_rect.position
+		_draw_brush_image(brush_image, src_rect, dst)
 
-	# Handle Mirroring
-	var mirror_x = (project.x_symmetry_point + 1) - dst.x - src_rect.size.x
-	var mirror_y = (project.y_symmetry_point + 1) - dst.y - src_rect.size.y
+		# Handle Mirroring
+		var mirror_x = (project.x_symmetry_point + 1) - dst.x - src_rect.size.x
+		var mirror_y = (project.y_symmetry_point + 1) - dst.y - src_rect.size.y
 
-	if Tools.horizontal_mirror:
-		var x_dst := Vector2(mirror_x, dst.y)
-		var mirror_brush_x: Image = remove_unselected_parts_of_brush(_mirror_brushes.x, x_dst)
-		_draw_brush_image(mirror_brush_x, _flip_rect(src_rect, size, true, false), x_dst)
+		if Tools.horizontal_mirror:
+			var x_dst := Vector2(mirror_x, dst.y)
+			var mirror_brush_x: Image = remove_unselected_parts_of_brush(_mirror_brushes.x, x_dst)
+			_draw_brush_image(mirror_brush_x, _flip_rect(src_rect, size, true, false), x_dst)
+			if Tools.vertical_mirror:
+				var xy_dst := Vector2(mirror_x, mirror_y)
+				var mirror_brush_xy := remove_unselected_parts_of_brush(_mirror_brushes.xy, xy_dst)
+				_draw_brush_image(mirror_brush_xy, _flip_rect(src_rect, size, true, true), xy_dst)
 		if Tools.vertical_mirror:
-			var xy_dst := Vector2(mirror_x, mirror_y)
-			var mirror_brush_xy: Image = remove_unselected_parts_of_brush(
-				_mirror_brushes.xy, xy_dst
-			)
-			_draw_brush_image(mirror_brush_xy, _flip_rect(src_rect, size, true, true), xy_dst)
-	if Tools.vertical_mirror:
-		var y_dst := Vector2(dst.x, mirror_y)
-		var mirror_brush_y: Image = remove_unselected_parts_of_brush(_mirror_brushes.y, y_dst)
-		_draw_brush_image(mirror_brush_y, _flip_rect(src_rect, size, false, true), y_dst)
+			var y_dst := Vector2(dst.x, mirror_y)
+			var mirror_brush_y: Image = remove_unselected_parts_of_brush(_mirror_brushes.y, y_dst)
+			_draw_brush_image(mirror_brush_y, _flip_rect(src_rect, size, false, true), y_dst)
 
 
 func remove_unselected_parts_of_brush(brush: Image, dst: Vector2) -> Image:
@@ -306,22 +435,32 @@ func remove_unselected_parts_of_brush(brush: Image, dst: Vector2) -> Image:
 	for x in size.x:
 		for y in size.y:
 			var pos := Vector2(x, y) + dst
-			if !project.selection_bitmap.get_bit(pos):
+			if !project.selection_map.is_pixel_selected(pos):
 				new_brush.set_pixel(x, y, Color(0))
 	new_brush.unlock()
 	return new_brush
 
 
-func draw_indicator() -> void:
-	draw_indicator_at(_cursor, Vector2.ZERO, Color.blue)
+func draw_indicator(left: bool) -> void:
+	var color := Global.left_tool_color if left else Global.right_tool_color
+	draw_indicator_at(snap_position(_cursor), Vector2.ZERO, color)
 	if (
-		Global.current_project.tile_mode
-		and Global.current_project.get_tile_mode_rect().has_point(_cursor)
+		Global.current_project.has_selection
+		and Global.current_project.tiles.mode == Tiles.MODE.NONE
 	):
-		var tile := _line_start if _draw_line else _cursor
-		if not Global.current_project.tile_mode_rects[Global.TileMode.NONE].has_point(tile):
-			var offset := tile - tile.posmodv(Global.current_project.size)
-			draw_indicator_at(_cursor, offset, Color.green)
+		var position := _line_start if _draw_line else _cursor
+		var nearest_pos := Global.current_project.selection_map.get_nearest_position(position)
+		if nearest_pos != Vector2.ZERO:
+			var offset := nearest_pos
+			draw_indicator_at(snap_position(_cursor), offset, Color.green)
+			return
+
+	if Global.current_project.tiles.mode and Global.current_project.tiles.has_point(_cursor):
+		var position := _line_start if _draw_line else _cursor
+		var nearest_tile := Global.current_project.tiles.get_nearest_tile(position)
+		if nearest_tile.position != Vector2.ZERO:
+			var offset := nearest_tile.position
+			draw_indicator_at(snap_position(_cursor), offset, Color.green)
 
 
 func draw_indicator_at(position: Vector2, offset: Vector2, color: Color) -> void:
@@ -345,23 +484,48 @@ func draw_indicator_at(position: Vector2, offset: Vector2, color: Color) -> void
 
 
 func _set_pixel(position: Vector2, ignore_mirroring := false) -> void:
-	var project: Project = Global.current_project
-	if project.tile_mode and project.get_tile_mode_rect().has_point(position):
-		position = position.posmodv(project.size)
+	if position in _draw_cache and _for_frame == _stroke_project.current_frame:
+		return
+	if _draw_cache.size() > _cache_limit or _for_frame != _stroke_project.current_frame:
+		_draw_cache = []
+		_for_frame = _stroke_project.current_frame
+	_draw_cache.append(position)  # Store the position of pixel
+	# Invoke uncached version to actually draw the pixel
+	_set_pixel_no_cache(position, ignore_mirroring)
 
-	if !project.can_pixel_get_drawn(position):
+
+func _set_pixel_no_cache(position: Vector2, ignore_mirroring := false) -> void:
+	position = _stroke_project.tiles.get_canon_position(position)
+	if Global.current_project.has_selection:
+		position = Global.current_project.selection_map.get_canon_position(position)
+	if !_stroke_project.can_pixel_get_drawn(position):
 		return
 
-	var images := _get_selected_draw_images()
-	var i := int(position.x + position.y * project.size.x)
-	if _mask.size() >= i + 1:
-		if _mask[i] < Tools.pen_pressure:
-			_mask[i] = Tools.pen_pressure
-			for image in images:
-				_drawer.set_pixel(image, position, tool_slot.color, ignore_mirroring)
-	else:
+	var images := _stroke_images
+	if _is_mask_size_zero:
 		for image in images:
 			_drawer.set_pixel(image, position, tool_slot.color, ignore_mirroring)
+	else:
+		var i := int(position.x + position.y * _stroke_project.size.x)
+		if _mask.size() >= i + 1:
+			var alpha_dynamic: float = Tools.get_alpha_dynamic()
+			var alpha: float = images[0].get_pixelv(position).a
+			if _mask[i] < alpha_dynamic:
+				# Overwrite colors to avoid additive blending between strokes of
+				# brushes that are larger than 1px
+				# This is not a proper solution and it does not work if the pixels
+				# in the background are not transparent
+				var overwrite = _drawer.color_op.get("overwrite")
+				if overwrite != null and _mask[i] > alpha:
+					_drawer.color_op.overwrite = true
+				_mask[i] = alpha_dynamic
+				for image in images:
+					_drawer.set_pixel(image, position, tool_slot.color, ignore_mirroring)
+				if overwrite != null:
+					_drawer.color_op.overwrite = overwrite
+		else:
+			for image in images:
+				_drawer.set_pixel(image, position, tool_slot.color, ignore_mirroring)
 
 
 func _draw_brush_image(_image: Image, _src_rect: Rect2, _dst: Vector2) -> void:
@@ -369,7 +533,7 @@ func _draw_brush_image(_image: Image, _src_rect: Rect2, _dst: Vector2) -> void:
 
 
 func _create_blended_brush_image(image: Image) -> Image:
-	var size := image.get_size() * _brush_size
+	var size := image.get_size() * _brush_size_dynamics
 	var brush := Image.new()
 	brush.copy_from(image)
 	brush = _blend_image(brush, tool_slot.color, _brush_interpolate / 100.0)
@@ -394,11 +558,11 @@ func _blend_image(image: Image, color: Color, factor: float) -> Image:
 func _create_brush_indicator() -> BitMap:
 	match _brush.type:
 		Brushes.PIXEL:
-			return _create_pixel_indicator(_brush_size)
+			return _create_pixel_indicator(_brush_size_dynamics)
 		Brushes.CIRCLE:
-			return _create_circle_indicator(_brush_size, false)
+			return _create_circle_indicator(_brush_size_dynamics, false)
 		Brushes.FILLED_CIRCLE:
-			return _create_circle_indicator(_brush_size, true)
+			return _create_circle_indicator(_brush_size_dynamics, true)
 		_:
 			return _create_image_indicator(_brush_image)
 
@@ -417,34 +581,9 @@ func _create_pixel_indicator(size: int) -> BitMap:
 
 
 func _create_circle_indicator(size: int, fill := false) -> BitMap:
-	var bitmap := BitMap.new()
-	bitmap.create(Vector2.ONE * (size * 2 + 1))
-	var position := Vector2(size, size)
-
-	var r := size
-	var x := -r
-	var y := 0
-	var err := 2 - r * 2
-	var draw := true
-	if fill:
-		bitmap.set_bit(position, true)
-	while x < 0:
-		if draw:
-			for i in range(1 if fill else -x, -x + 1):
-				bitmap.set_bit(position + Vector2(-i, y), true)
-				bitmap.set_bit(position + Vector2(-y, -i), true)
-				bitmap.set_bit(position + Vector2(i, -y), true)
-				bitmap.set_bit(position + Vector2(y, i), true)
-		draw = not fill
-		r = err
-		if r <= y:
-			y += 1
-			err += y * 2 + 1
-			draw = true
-		if r > x || err > y:
-			x += 1
-			err += x * 2 + 1
-	return bitmap
+	_circle_tool_shortcut = PoolVector2Array()
+	var diameter := Vector2(size, size) * 2 + Vector2.ONE
+	return _fill_bitmap_with_points(_compute_draw_tool_circle(Vector2(size, size), fill), diameter)
 
 
 func _create_line_indicator(indicator: BitMap, start: Vector2, end: Vector2) -> BitMap:
@@ -465,10 +604,10 @@ func _create_line_indicator(indicator: BitMap, start: Vector2, end: Vector2) -> 
 	var dy := int(-abs(end.y - start.y))
 	var err := dx + dy
 	var e2 := err << 1
-	var sx = 1 if start.x < end.x else -1
-	var sy = 1 if start.y < end.y else -1
-	var x = start.x
-	var y = start.y
+	var sx := 1 if start.x < end.x else -1
+	var sy := 1 if start.y < end.y else -1
+	var x := start.x
+	var y := start.y
 	while !(x == end.x && y == end.y):
 		_blit_indicator(bitmap, indicator, Vector2(x, y))
 		e2 = err << 1
@@ -499,8 +638,8 @@ func _line_angle_constraint(start: Vector2, end: Vector2) -> Dictionary:
 	var result := {}
 	var angle := rad2deg(end.angle_to_point(start))
 	var distance := start.distance_to(end)
-	if Tools.control:
-		if tool_slot.pixel_perfect:
+	if Input.is_action_pressed("draw_snap_angle"):
+		if Tools.pixel_perfect:
 			angle = stepify(angle, 22.5)
 			if step_decimals(angle) != 0:
 				var diff := end - start
@@ -530,9 +669,13 @@ func _get_undo_data() -> Dictionary:
 			cels.append(project.frames[cel_index[0]].cels[cel_index[1]])
 	else:
 		for frame in project.frames:
-			var cel: Cel = frame.cels[project.current_layer]
+			var cel: BaseCel = frame.cels[project.current_layer]
+			if not cel is PixelCel:
+				continue
 			cels.append(cel)
 	for cel in cels:
+		if not cel is PixelCel:
+			continue
 		var image: Image = cel.image
 		image.unlock()
 		data[image] = image.data
@@ -542,8 +685,7 @@ func _get_undo_data() -> Dictionary:
 
 func _pick_color(position: Vector2) -> void:
 	var project: Project = Global.current_project
-	if project.tile_mode and project.get_tile_mode_rect().has_point(position):
-		position = position.posmodv(project.size)
+	position = project.tiles.get_canon_position(position)
 
 	if position.x < 0 or position.y < 0:
 		return
@@ -553,8 +695,16 @@ func _pick_color(position: Vector2) -> void:
 	if position.x > image.get_width() - 1 or position.y > image.get_height() - 1:
 		return
 
-	image.lock()
-	var color := image.get_pixelv(position)
-	image.unlock()
+	var color := Color(0, 0, 0, 0)
+	var curr_frame: Frame = project.frames[project.current_frame]
+	for layer in project.layers.size():
+		var idx = (project.layers.size() - 1) - layer
+		if project.layers[idx].is_visible_in_hierarchy():
+			image = curr_frame.cels[idx].get_image()
+			image.lock()
+			color = image.get_pixelv(position)
+			image.unlock()
+			if color != Color(0, 0, 0, 0):
+				break
 	var button := BUTTON_LEFT if Tools._slots[BUTTON_LEFT].tool_node == self else BUTTON_RIGHT
 	Tools.assign_color(color, button, false)

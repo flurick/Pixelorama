@@ -119,6 +119,8 @@ func _create_new_empty_palette(name: String, comment: String, width: int, height
 
 
 func _create_new_palette_from_current_palette(name: String, comment: String) -> void:
+	if !current_palette:
+		return
 	var new_palette: Palette = current_palette.duplicate()
 	new_palette.name = name
 	new_palette.comment = comment
@@ -142,7 +144,7 @@ func _create_new_palette_from_current_selection(
 	for x in current_project.size.x:
 		for y in current_project.size.y:
 			var pos := Vector2(x, y)
-			if current_project.selection_bitmap.get_bit(pos):
+			if current_project.selection_map.is_pixel_selected(pos):
 				pixels.append(pos)
 	_fill_new_palette_with_colors(pixels, new_palette, add_alpha_colors, get_colors_from)
 
@@ -172,7 +174,7 @@ func _fill_new_palette_with_colors(
 	match get_colors_from:
 		GetColorsFrom.CURRENT_CEL:
 			for cel_index in current_project.selected_cels:
-				var cel: Cel = current_project.frames[cel_index[0]].cels[cel_index[1]]
+				var cel = current_project.frames[cel_index[0]].cels[cel_index[1]]
 				cels.append(cel)
 		GetColorsFrom.CURRENT_FRAME:
 			for cel in current_project.frames[current_project.current_frame].cels:
@@ -184,7 +186,7 @@ func _fill_new_palette_with_colors(
 
 	for cel in cels:
 		var cel_image := Image.new()
-		cel_image.copy_from(cel.image)
+		cel_image.copy_from(cel.get_image())
 		cel_image.lock()
 		if cel_image.is_invisible():
 			continue
@@ -334,7 +336,7 @@ func _load_palettes() -> void:
 		"data", "last_palette", DEFAULT_PALETTE_NAME
 	)
 	for i in range(len(search_locations)):
-		# If palette is not in palettes write path - make it's copy in the write path
+		# If palette is not in palettes write path - make its copy in the write path
 		var make_copy := false
 		if search_locations[i] != palettes_write_path:
 			make_copy = true
@@ -345,8 +347,7 @@ func _load_palettes() -> void:
 			var palette: Palette = load(base_directory.plus_file(file_name))
 			if palette:
 				if make_copy:
-					# Makes a copy of the palette
-					_save_palette(palette)
+					_save_palette(palette)  # Makes a copy of the palette
 				palette.resource_name = palette.resource_path.get_file().trim_suffix(".tres")
 				# On Windows for some reason paths can contain "res://" in front of them which breaks saving
 				palette.resource_path = palette.resource_path.trim_prefix("res://")
@@ -508,7 +509,7 @@ func _import_gpl(path: String, text: String) -> Palette:
 		elif line.begins_with("Name: "):
 			palette_name = line.replace("Name: ", "")
 		elif line.begins_with("Columns: "):
-			# Number of colors in this palette. Unecessary and often wrong
+			# Number of colors in this palette. Unnecessary and often wrong
 			continue
 		elif line_number > 0 && line.length() >= 9:
 			line = line.replace("\t", " ")
@@ -565,7 +566,7 @@ func _import_image_palette(path: String, image: Image) -> Palette:
 	var height: int = image.get_height()
 	var width: int = image.get_width()
 
-	# Iterate all pixels and store unique colors to palete
+	# Iterate all pixels and store unique colors to palette
 	image.lock()
 	for y in range(0, height):
 		for x in range(0, width):

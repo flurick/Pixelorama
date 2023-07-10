@@ -13,20 +13,27 @@ onready var selection_node: Node2D = Global.canvas.selection
 
 
 func _input(event: InputEvent) -> void:
-	if _start_pos != Vector2.INF:
-		if event.is_action_pressed("ctrl"):
-			_snap_to_grid = true
-			var grid_size := Vector2(Global.grid_width, Global.grid_height)
-			_offset = _offset.snapped(grid_size)
-			if Global.current_project.has_selection:
-				var prev_pos = selection_node.big_bounding_rectangle.position
-				selection_node.big_bounding_rectangle.position = prev_pos.snapped(grid_size)
-				selection_node.marching_ants_outline.offset += (
-					selection_node.big_bounding_rectangle.position
-					- prev_pos
-				)
-		elif event.is_action_released("ctrl"):
-			_snap_to_grid = false
+	if _start_pos == Vector2.INF:
+		return
+	if event.is_action_pressed("transform_snap_grid"):
+		_snap_to_grid = true
+		_offset = _offset.snapped(Global.grid_size)
+		if Global.current_project.has_selection and selection_node.is_moving_content:
+			var prev_pos: Vector2 = selection_node.big_bounding_rectangle.position
+			selection_node.big_bounding_rectangle.position = prev_pos.snapped(Global.grid_size)
+			# The first time transform_snap_grid is enabled then _snap_position() is not called
+			# and the selection had wrong offset, so do selection offsetting here
+			var grid_offset := Global.grid_offset
+			grid_offset = Vector2(
+				fmod(grid_offset.x, Global.grid_size.x), fmod(grid_offset.y, Global.grid_size.y)
+			)
+			selection_node.big_bounding_rectangle.position += grid_offset
+			selection_node.marching_ants_outline.offset += (
+				selection_node.big_bounding_rectangle.position
+				- prev_pos
+			)
+	elif event.is_action_released("transform_snap_grid"):
+		_snap_to_grid = false
 
 
 func draw_start(position: Vector2) -> void:
@@ -49,15 +56,7 @@ func draw_move(position: Vector2) -> void:
 	# while the content is being moved
 	if _content_transformation_check != selection_node.is_moving_content:
 		return
-	if Tools.shift:  # Snap to axis
-		var angle := position.angle_to_point(_start_pos)
-		if abs(angle) <= PI / 4 or abs(angle) >= 3 * PI / 4:
-			position.y = _start_pos.y
-		else:
-			position.x = _start_pos.x
-	if _snap_to_grid:  # Snap to grid
-		position = position.snapped(Vector2(Global.grid_width, Global.grid_height))
-		position += Vector2(Global.grid_offset_x, Global.grid_offset_y)
+	position = _snap_position(position)
 
 	if Global.current_project.has_selection:
 		selection_node.move_content(position - _offset)
@@ -74,23 +73,13 @@ func draw_end(position: Vector2) -> void:
 		_start_pos != Vector2.INF
 		and _content_transformation_check == selection_node.is_moving_content
 	):
-		if Tools.shift:  # Snap to axis
-			var angle := position.angle_to_point(_start_pos)
-			if abs(angle) <= PI / 4 or abs(angle) >= 3 * PI / 4:
-				position.y = _start_pos.y
-			else:
-				position.x = _start_pos.x
-
-		if _snap_to_grid:  # Snap to grid
-			position = position.snapped(Vector2(Global.grid_width, Global.grid_height))
-			position += Vector2(Global.grid_offset_x, Global.grid_offset_y)
-
-		var pixel_diff: Vector2 = position - _start_pos
+		position = _snap_position(position)
 		var project: Project = Global.current_project
 
 		if project.has_selection:
 			selection_node.move_borders_end()
 		else:
+			var pixel_diff: Vector2 = position - _start_pos
 			Global.canvas.move_preview_location = Vector2.ZERO
 			var images := _get_selected_draw_images()
 			for image in images:
@@ -103,6 +92,32 @@ func draw_end(position: Vector2) -> void:
 
 	_start_pos = Vector2.INF
 	_snap_to_grid = false
+
+
+func _snap_position(position: Vector2) -> Vector2:
+	if Input.is_action_pressed("transform_snap_axis"):
+		var angle := position.angle_to_point(_start_pos)
+		if abs(angle) <= PI / 4 or abs(angle) >= 3 * PI / 4:
+			position.y = _start_pos.y
+		else:
+			position.x = _start_pos.x
+	if _snap_to_grid:  # Snap to grid
+		position = position.snapped(Global.grid_size)
+		# The part below only corrects the offset for situations when there is no selection
+		# Offsets when there is selection is controlled in _input() function
+		if !Global.current_project.has_selection:
+			var move_offset := Vector2.ZERO
+			move_offset.x = (
+				_start_pos.x
+				- int(_start_pos.x / Global.grid_size.x) * Global.grid_size.x
+			)
+			move_offset.y = (
+				_start_pos.y
+				- int(_start_pos.y / Global.grid_size.y) * Global.grid_size.y
+			)
+			position += move_offset
+
+	return position
 
 
 func commit_undo(action: String) -> void:
@@ -137,9 +152,11 @@ func _get_undo_data() -> Dictionary:
 			cels.append(project.frames[cel_index[0]].cels[cel_index[1]])
 	else:
 		for frame in project.frames:
-			var cel: Cel = frame.cels[project.current_layer]
+			var cel: PixelCel = frame.cels[project.current_layer]
 			cels.append(cel)
 	for cel in cels:
+		if not cel is PixelCel:
+			continue
 		var image: Image = cel.image
 		image.unlock()
 		data[image] = image.data

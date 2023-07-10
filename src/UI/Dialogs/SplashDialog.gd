@@ -1,27 +1,41 @@
-extends WindowDialog
+extends AcceptDialog
 
 var artworks := [
-	[
+	[  # Licensed under CC-BY-NC-ND, https://creativecommons.org/licenses/by-nc-nd/4.0/
 		"Roroto Sic",
 		preload("res://assets/graphics/splash_screen/artworks/roroto.png"),
-		"https://linktr.ee/Roroto_Sic"
+		"https://linktr.ee/Roroto_Sic",
+		Color.white
 	],
-	[
-		"Kamilayza",
-		preload("res://assets/graphics/splash_screen/artworks/kamilayza.png"),
-		"https://twitter.com/kamilayza"
+	[  # Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/
+		"Exuvita",
+		preload("res://assets/graphics/splash_screen/artworks/exuvita.png"),
+		"",
+		Color.black
 	],
-	[
+	[  # Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/
+		"Uch",
+		preload("res://assets/graphics/splash_screen/artworks/uch.png"),
+		"https://www.instagram.com/vs.pxl/",
+		Color.black
+	],
+	[  # Licensed under CC BY-NC-SA 4.0, https://creativecommons.org/licenses/by-nc-sa/4.0/
 		"Wishdream",
 		preload("res://assets/graphics/splash_screen/artworks/wishdream.png"),
-		"https://twitter.com/WishdreamStar"
-	]
+		"https://twitter.com/WishdreamStar",
+		Color.black
+	],
 ]
 
 var chosen_artwork: int
-
 var splash_art_texturerect: TextureRect
 var art_by_label: Button
+
+onready var version_text: TextureRect = find_node("VersionText")
+
+
+func _ready() -> void:
+	get_ok().visible = false
 
 
 func _on_SplashDialog_about_to_show() -> void:
@@ -51,9 +65,12 @@ func change_artwork(direction: int) -> void:
 	art_by_label.text = tr("Art by: %s") % artworks[chosen_artwork][0]
 	art_by_label.hint_tooltip = artworks[chosen_artwork][2]
 
+	version_text.modulate = artworks[chosen_artwork][3]
+
 
 func _on_ArtCredits_pressed() -> void:
-	OS.shell_open(artworks[chosen_artwork][2])
+	if artworks[chosen_artwork][2]:
+		OS.shell_open(artworks[chosen_artwork][2])
 
 
 func _on_ShowOnStartup_toggled(pressed: bool) -> void:

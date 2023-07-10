@@ -2,15 +2,9 @@ name: "dev-clickable-builds"
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
-    paths-ignore: 
-    - "Translations/*"
-    - "installer/*.pot"
-    - "installer/po/*"
 
 env:
-  GODOT_VERSION: 3.4.2
+  GODOT_VERSION: 3.5
   EXPORT_NAME: Pixelorama
 
 jobs:
@@ -18,7 +12,7 @@ jobs:
     name: Create Pixelorama pack data
     runs-on: ubuntu-latest
     container:
-      image: docker://barichello/godot-ci:3.4.2
+      image: docker://barichello/godot-ci:3.5
     steps:
       - name: Clone source
         uses: actions/checkout@v2

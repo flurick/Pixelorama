@@ -6,8 +6,6 @@ uniform bool blue;
 uniform bool green;
 uniform bool alpha;
 uniform sampler2D selection;
-uniform bool affect_selection;
-uniform bool has_selection;
 
 
 void fragment() {
@@ -16,19 +14,14 @@ void fragment() {
 	vec4 selection_color = texture(selection, UV);
 	vec4 col = original_color;
     if (red)
-        col.r = 1f - col.r;
+        col.r = 1.0 - col.r;
     if (green)
-        col.g = 1f - col.g;
+        col.g = 1.0 - col.g;
     if (blue)
-        col.b = 1f - col.b;
+        col.b = 1.0 - col.b;
     if (alpha)
-        col.a = 1f - col.a;
+        col.a = 1.0 - col.a;
 
-	vec4 output;
-	if(affect_selection && has_selection)
-		output = mix(original_color.rgba, col, selection_color.a);
-	else
-		output = col;
-
+	vec4 output = mix(original_color.rgba, col, selection_color.a);
 	COLOR = output;
 }

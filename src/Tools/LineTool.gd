@@ -48,7 +48,6 @@ func set_config(config: Dictionary) -> void:
 func update_config() -> void:
 	.update_config()
 	$ThicknessSlider.value = _thickness
-	$ShapeThickness/ThicknessSpinbox.value = _thickness
 
 
 func _get_shape_points(_size: Vector2) -> PoolVector2Array:
@@ -61,15 +60,16 @@ func _get_shape_points_filled(_size: Vector2) -> PoolVector2Array:
 
 func _input(event: InputEvent) -> void:
 	if _drawing:
-		if event.is_action_pressed("alt"):
+		if event.is_action_pressed("shape_displace"):
 			_displace_origin = true
-		elif event.is_action_released("alt"):
+		elif event.is_action_released("shape_displace"):
 			_displace_origin = false
 
 
 func draw_start(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_start(position)
-	if Input.is_action_pressed("alt"):
+	if Input.is_action_pressed("shape_displace"):
 		_picking_color = true
 		_pick_color(position)
 		return
@@ -78,6 +78,9 @@ func draw_start(position: Vector2) -> void:
 	Global.canvas.selection.transform_content_confirm()
 	update_mask()
 
+	if Global.mirror_view:
+		# mirroring position is ONLY required by "Preview"
+		position.x = Global.current_project.size.x - position.x - 1
 	_original_pos = position
 	_start = position
 	_offset = position
@@ -86,18 +89,23 @@ func draw_start(position: Vector2) -> void:
 
 
 func draw_move(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_move(position)
 	if _picking_color:  # Still return even if we released Alt
-		if Input.is_action_pressed("alt"):
+		if Input.is_action_pressed("shape_displace"):
 			_pick_color(position)
 		return
 
 	if _drawing:
+		if Global.mirror_view:
+			# mirroring position is ONLY required by "Preview"
+			position.x = Global.current_project.size.x - position.x - 1
 		if _displace_origin:
 			_original_pos += position - _offset
-		var d = _line_angle_constraint(_original_pos, position)
+		var d := _line_angle_constraint(_original_pos, position)
 		_dest = d.position
-		if Tools.control:
+
+		if Input.is_action_pressed("shape_center"):
 			_start = _original_pos - (_dest - _original_pos)
 		else:
 			_start = _original_pos
@@ -106,11 +114,23 @@ func draw_move(position: Vector2) -> void:
 
 
 func draw_end(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_end(position)
 	if _picking_color:
 		return
 
 	if _drawing:
+		if Global.mirror_view:
+			# now we revert back the coordinates from their mirror form so that line can be drawn
+			_original_pos.x = (Global.current_project.size.x - 1) - _original_pos.x
+			_start.x = (Global.current_project.size.x - 1) - _start.x
+			_offset.x = (Global.current_project.size.x - 1) - _offset.x
+			_dest.x = (Global.current_project.size.x - 1) - _dest.x
+			if _thickness % 2 == 0:
+				_original_pos.x += 1
+				_start.x += 1
+				_offset.x += 1
+				_dest.x += 1
 		_draw_shape()
 
 		_original_pos = Vector2.ZERO
@@ -155,7 +175,7 @@ func _draw_shape() -> void:
 	for point in points:
 		# Reset drawer every time because pixel perfect sometimes breaks the tool
 		_drawer.reset()
-		# Draw each point offseted based on the shape's thickness
+		# Draw each point offsetted based on the shape's thickness
 		draw_tool(point)
 
 	commit_undo()
@@ -201,7 +221,7 @@ func _line_angle_constraint(start: Vector2, end: Vector2) -> Dictionary:
 	var result := {}
 	var angle := rad2deg(end.angle_to_point(start))
 	var distance := start.distance_to(end)
-	if Tools.shift:
+	if Input.is_action_pressed("shape_perfect"):
 		angle = stepify(angle, 22.5)
 		if step_decimals(angle) != 0:
 			var diff := end - start

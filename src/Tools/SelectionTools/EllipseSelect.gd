@@ -8,25 +8,25 @@ var _displace_origin = false  # Mouse Click + Alt
 
 
 func _input(event: InputEvent) -> void:
-	._input(event)
 	if !_move and !_rect.has_no_area():
-		if event.is_action_pressed("shift"):
+		if event.is_action_pressed("shape_perfect"):
 			_square = true
-		elif event.is_action_released("shift"):
+		elif event.is_action_released("shape_perfect"):
 			_square = false
-		if event.is_action_pressed("ctrl"):
+		if event.is_action_pressed("shape_center"):
 			_expand_from_center = true
-		elif event.is_action_released("ctrl"):
+		elif event.is_action_released("shape_center"):
 			_expand_from_center = false
-		if event.is_action_pressed("alt"):
+		if event.is_action_pressed("shape_displace"):
 			_displace_origin = true
-		elif event.is_action_released("alt"):
+		elif event.is_action_released("shape_displace"):
 			_displace_origin = false
 
 
 func draw_move(position: Vector2) -> void:
 	if selection_node.arrow_key_move:
 		return
+	position = snap_position(position)
 	.draw_move(position)
 	if !_move:
 		if _displace_origin:
@@ -39,6 +39,7 @@ func draw_move(position: Vector2) -> void:
 func draw_end(position: Vector2) -> void:
 	if selection_node.arrow_key_move:
 		return
+	position = snap_position(position)
 	.draw_end(position)
 	_rect = Rect2(0, 0, 0, 0)
 	_square = false
@@ -51,14 +52,16 @@ func draw_preview() -> void:
 		var canvas: Node2D = Global.canvas.previews
 		var position := canvas.position
 		var scale := canvas.scale
+		var temp_rect = _rect
 		if Global.mirror_view:
 			position.x = position.x + Global.current_project.size.x
+			temp_rect.position.x = Global.current_project.size.x - temp_rect.position.x
 			scale.x = -1
 
-		var border := _get_shape_points_filled(_rect.size)
-		var indicator := _fill_bitmap_with_points(border, _rect.size)
+		var border := _get_shape_points_filled(temp_rect.size)
+		var indicator := _fill_bitmap_with_points(border, temp_rect.size)
 
-		canvas.draw_set_transform(_rect.position, canvas.rotation, scale)
+		canvas.draw_set_transform(temp_rect.position, canvas.rotation, scale)
 		for line in _create_polylines(indicator):
 			canvas.draw_polyline(PoolVector2Array(line), Color.black)
 
@@ -66,6 +69,7 @@ func draw_preview() -> void:
 
 
 func apply_selection(_position: Vector2) -> void:
+	.apply_selection(_position)
 	var project: Project = Global.current_project
 	if !_add and !_subtract and !_intersect:
 		Global.canvas.selection.clear_selection()
@@ -73,8 +77,9 @@ func apply_selection(_position: Vector2) -> void:
 			Global.canvas.selection.commit_undo("Select", undo_data)
 
 	if _rect.size != Vector2.ZERO:
-		var selection_bitmap_copy: BitMap = project.selection_bitmap.duplicate()
-		set_ellipse(selection_bitmap_copy, _rect.position)
+		var selection_map_copy := SelectionMap.new()
+		selection_map_copy.copy_from(project.selection_map)
+		set_ellipse(selection_map_copy, _rect.position)
 
 		# Handle mirroring
 		if Tools.horizontal_mirror:
@@ -85,7 +90,7 @@ func apply_selection(_position: Vector2) -> void:
 				+ 1
 			)
 			mirror_x_rect.end.x = Global.current_project.x_symmetry_point - _rect.end.x + 1
-			set_ellipse(selection_bitmap_copy, mirror_x_rect.abs().position)
+			set_ellipse(selection_map_copy, mirror_x_rect.abs().position)
 			if Tools.vertical_mirror:
 				var mirror_xy_rect := mirror_x_rect
 				mirror_xy_rect.position.y = (
@@ -94,7 +99,7 @@ func apply_selection(_position: Vector2) -> void:
 					+ 1
 				)
 				mirror_xy_rect.end.y = Global.current_project.y_symmetry_point - _rect.end.y + 1
-				set_ellipse(selection_bitmap_copy, mirror_xy_rect.abs().position)
+				set_ellipse(selection_map_copy, mirror_xy_rect.abs().position)
 		if Tools.vertical_mirror:
 			var mirror_y_rect := _rect
 			mirror_y_rect.position.y = (
@@ -103,30 +108,28 @@ func apply_selection(_position: Vector2) -> void:
 				+ 1
 			)
 			mirror_y_rect.end.y = Global.current_project.y_symmetry_point - _rect.end.y + 1
-			set_ellipse(selection_bitmap_copy, mirror_y_rect.abs().position)
+			set_ellipse(selection_map_copy, mirror_y_rect.abs().position)
 
-		project.selection_bitmap = selection_bitmap_copy
-		Global.canvas.selection.big_bounding_rectangle = project.get_selection_rectangle(
-			project.selection_bitmap
-		)
+		project.selection_map = selection_map_copy
+		Global.canvas.selection.big_bounding_rectangle = project.selection_map.get_used_rect()
 		Global.canvas.selection.commit_undo("Select", undo_data)
 
 
-func set_ellipse(bitmap: BitMap, position: Vector2) -> void:
+func set_ellipse(selection_map: SelectionMap, position: Vector2) -> void:
 	var project: Project = Global.current_project
-	var bitmap_size: Vector2 = bitmap.get_size()
+	var bitmap_size: Vector2 = selection_map.get_size()
 	if _intersect:
-		bitmap.set_bit_rect(Rect2(Vector2.ZERO, bitmap_size), false)
+		selection_map.clear()
 	var points := _get_shape_points_filled(_rect.size)
 	for p in points:
 		var pos: Vector2 = position + p
 		if pos.x < 0 or pos.y < 0 or pos.x >= bitmap_size.x or pos.y >= bitmap_size.y:
 			continue
 		if _intersect:
-			if project.selection_bitmap.get_bit(pos):
-				bitmap.set_bit(pos, true)
+			if project.selection_map.is_pixel_selected(pos):
+				selection_map.select_pixel(pos, true)
 		else:
-			bitmap.set_bit(pos, !_subtract)
+			selection_map.select_pixel(pos, !_subtract)
 
 
 # Given an origin point and destination point, returns a rect representing
@@ -257,13 +260,3 @@ func _get_ellipse_points(pos: Vector2, size: Vector2) -> Array:
 		y1 -= 1
 
 	return array
-
-
-func _fill_bitmap_with_points(points: Array, size: Vector2) -> BitMap:
-	var bitmap := BitMap.new()
-	bitmap.create(size)
-
-	for point in points:
-		bitmap.set_bit(point, 1)
-
-	return bitmap

@@ -1,11 +1,56 @@
 extends Node
 
+signal project_changed
+signal cel_changed
+
+enum LayerTypes { PIXEL, GROUP, THREE_D }
 enum GridTypes { CARTESIAN, ISOMETRIC, ALL }
-enum PressureSensitivity { NONE, ALPHA, SIZE, ALPHA_AND_SIZE }
-enum ThemeTypes { DARK, BLUE, CARAMEL, LIGHT }
-enum TileMode { NONE, BOTH, X_AXIS, Y_AXIS }
-enum IconColorFrom { THEME, CUSTOM }
+enum ColorFrom { THEME, CUSTOM }
 enum ButtonSize { SMALL, BIG }
+
+enum FileMenu { NEW, OPEN, OPEN_LAST_PROJECT, RECENT, SAVE, SAVE_AS, EXPORT, EXPORT_AS, QUIT }
+enum EditMenu { UNDO, REDO, COPY, CUT, PASTE, PASTE_IN_PLACE, DELETE, NEW_BRUSH, PREFERENCES }
+enum ViewMenu {
+	TILE_MODE,
+	TILE_MODE_OFFSETS,
+	GREYSCALE_VIEW,
+	MIRROR_VIEW,
+	SHOW_GRID,
+	SHOW_PIXEL_GRID,
+	SHOW_RULERS,
+	SHOW_GUIDES,
+	SHOW_MOUSE_GUIDES,
+	SNAP_TO,
+}
+enum WindowMenu { WINDOW_OPACITY, PANELS, LAYOUTS, MOVABLE_PANELS, ZEN_MODE, FULLSCREEN_MODE }
+enum ImageMenu {
+	RESIZE_CANVAS,
+	OFFSET_IMAGE,
+	SCALE_IMAGE,
+	CROP_IMAGE,
+	FLIP,
+	ROTATE,
+	OUTLINE,
+	DROP_SHADOW,
+	INVERT_COLORS,
+	DESATURATION,
+	HSV,
+	POSTERIZE,
+	GRADIENT,
+	GRADIENT_MAP,
+	SHADER
+}
+enum SelectMenu { SELECT_ALL, CLEAR_SELECTION, INVERT, TILE_MODE }
+enum HelpMenu {
+	VIEW_SPLASH_SCREEN,
+	ONLINE_DOCS,
+	ISSUE_TRACKER,
+	OPEN_LOGS_FOLDER,
+	CHANGELOG,
+	ABOUT_PIXELORAMA
+}
+
+const OVERRIDE_FILE := "override.cfg"
 
 var root_directory := "."
 var window_title := "" setget _title_changed  # Why doesn't Godot have get_window_title()?
@@ -20,7 +65,6 @@ var current_project_index := 0 setget _project_changed
 var ui_tooltips := {}
 
 # Canvas related stuff
-var layers_changed_skip := false
 var can_draw := false
 var move_guides_on_canvas := false
 var has_focus := false
@@ -28,32 +72,31 @@ var has_focus := false
 var play_only_tags := true
 var show_x_symmetry_axis := false
 var show_y_symmetry_axis := false
-var default_clear_color := Color.gray
 
 # Preferences
-var pressure_sensitivity_mode = PressureSensitivity.NONE
 var open_last_project := false
 var quit_confirmation := false
 var smooth_zoom := true
 
 var shrink := 1.0
 var dim_on_popup := true
-var theme_type: int = ThemeTypes.DARK
 var modulate_icon_color := Color.gray
-var icon_color_from: int = IconColorFrom.THEME
+var icon_color_from: int = ColorFrom.THEME
+var modulate_clear_color := Color.gray
+var clear_color_from: int = ColorFrom.THEME
 var custom_icon_color := Color.gray
 var tool_button_size: int = ButtonSize.SMALL
+var left_tool_color := Color("0086cf")
+var right_tool_color := Color("fd6d14")
 
 var default_width := 64
 var default_height := 64
 var default_fill_color := Color(0, 0, 0, 0)
+var snapping_distance := 32.0
 var grid_type = GridTypes.CARTESIAN
-var grid_width := 2
-var grid_height := 2
-var grid_isometric_cell_bounds_width := 16
-var grid_isometric_cell_bounds_height := 8
-var grid_offset_x := 0
-var grid_offset_y := 0
+var grid_size := Vector2(2, 2)
+var isometric_grid_size := Vector2(16, 8)
+var grid_offset := Vector2.ZERO
 var grid_draw_over_tile_mode := false
 var grid_color := Color.black
 var pixel_grid_show_at_zoom := 1500.0  # percentage
@@ -66,6 +109,10 @@ var checker_follow_movement := false
 var checker_follow_scale := false
 var tilemode_opacity := 1.0
 
+var select_layer_on_button_click := false
+var onion_skinning_past_color := Color.red
+var onion_skinning_future_color := Color.blue
+
 var selection_animated_borders := true
 var selection_border_color_1 := Color.white
 var selection_border_color_2 := Color.black
@@ -75,12 +122,14 @@ var fps_limit := 0
 
 var autosave_interval := 1.0
 var enable_autosave := true
+var renderer := OS.get_current_video_driver() setget _renderer_changed
+var tablet_driver := 0 setget _tablet_driver_changed
 
 # Tools & options
 var show_left_tool_icon := true
 var show_right_tool_icon := true
 var left_square_indicator_visible := true
-var right_square_indicator_visible := false
+var right_square_indicator_visible := true
 var native_cursors := false
 var cross_cursor := true
 
@@ -91,6 +140,10 @@ var draw_grid := false
 var draw_pixel_grid := false
 var show_rulers := true
 var show_guides := true
+var show_mouse_guides := false
+var snap_to_rectangular_grid := false
+var snap_to_guides := false
+var snap_to_perspective_guides := false
 
 # Onion skinning options
 var onion_skinning := false
@@ -101,20 +154,28 @@ var onion_skinning_blue_red := false
 # Palettes
 var palettes := {}
 
+# Crop Options:
+var crop_top := 0
+var crop_bottom := 0
+var crop_left := 0
+var crop_right := 0
+
 # Nodes
-var notification_label_node = preload("res://src/UI/NotificationLabel.tscn")
+var base_layer_button_node: PackedScene = preload("res://src/UI/Timeline/BaseLayerButton.tscn")
+var pixel_layer_button_node: PackedScene = preload("res://src/UI/Timeline/PixelLayerButton.tscn")
+var group_layer_button_node: PackedScene = preload("res://src/UI/Timeline/GroupLayerButton.tscn")
+var pixel_cel_button_node: PackedScene = preload("res://src/UI/Timeline/PixelCelButton.tscn")
+var group_cel_button_node: PackedScene = preload("res://src/UI/Timeline/GroupCelButton.tscn")
+var cel_3d_button_node: PackedScene = preload("res://src/UI/Timeline/Cel3DButton.tscn")
 
-onready var root: Node = get_tree().get_root()
-onready var control: Node = root.get_node("Control")
+onready var control: Node = get_tree().current_scene
 
-onready var left_cursor: Sprite = control.find_node("LeftCursor")
-onready var right_cursor: Sprite = control.find_node("RightCursor")
 onready var canvas: Canvas = control.find_node("Canvas")
 onready var tabs: Tabs = control.find_node("Tabs")
 onready var main_viewport: ViewportContainer = control.find_node("ViewportContainer")
 onready var second_viewport: ViewportContainer = control.find_node("Second Canvas")
-onready var main_canvas_container: Container = control.find_node("Main Canvas")
 onready var canvas_preview_container: Container = control.find_node("Canvas Preview")
+onready var global_tool_options: PanelContainer = control.find_node("Global Tool Options")
 onready var small_preview_viewport: ViewportContainer = canvas_preview_container.find_node(
 	"PreviewViewportContainer"
 )
@@ -125,33 +186,27 @@ onready var cameras := [camera, camera2, camera_preview]
 onready var horizontal_ruler: BaseButton = control.find_node("HorizontalRuler")
 onready var vertical_ruler: BaseButton = control.find_node("VerticalRuler")
 onready var transparent_checker: ColorRect = control.find_node("TransparentChecker")
-onready var greyscale_vision: ColorRect = control.find_node("GreyscaleVision")
 onready var preview_zoom_slider: VSlider = control.find_node("PreviewZoomSlider")
 
-onready var tool_panel: ScrollContainer = control.find_node("Tools")
-onready var color_pickers: Container = control.find_node("Color Pickers")
-onready var left_tool_options_scroll: ScrollContainer = control.find_node("Left Tool Options")
-onready var right_tool_options_scroll: ScrollContainer = control.find_node("Right Tool Options")
 onready var brushes_popup: Popup = control.find_node("BrushesPopup")
 onready var patterns_popup: Popup = control.find_node("PatternsPopup")
-onready var palette_panel: PalettePanel = control.find_node("Palette Panel")
+onready var palette_panel: PalettePanel = control.find_node("Palettes")
+
+onready var references_panel: ReferencesPanel = control.find_node("Reference Images")
+onready var perspective_editor := control.find_node("Perspective Editor")
 
 onready var top_menu_container: Panel = control.find_node("TopMenuContainer")
-onready var rotation_level_button: Button = control.find_node("RotationLevel")
-onready var rotation_level_spinbox: SpinBox = control.find_node("RotationSpinbox")
-onready var zoom_level_button: Button = control.find_node("ZoomLevel")
-onready var zoom_level_spinbox: SpinBox = control.find_node("ZoomSpinbox")
 onready var cursor_position_label: Label = control.find_node("CursorPosition")
 onready var current_frame_mark_label: Label = control.find_node("CurrentFrameMark")
 
 onready var animation_timeline: Panel = control.find_node("Animation Timeline")
 onready var animation_timer: Timer = animation_timeline.find_node("AnimationTimer")
-onready var frame_ids: HBoxContainer = animation_timeline.find_node("FrameIDs")
+onready var frame_hbox: HBoxContainer = animation_timeline.find_node("FrameHBox")
+onready var layer_vbox: VBoxContainer = animation_timeline.find_node("LayerVBox")
+onready var cel_vbox: VBoxContainer = animation_timeline.find_node("CelVBox")
+onready var tag_container: Control = animation_timeline.find_node("TagContainer")
 onready var play_forward: BaseButton = animation_timeline.find_node("PlayForward")
 onready var play_backwards: BaseButton = animation_timeline.find_node("PlayBackwards")
-onready var layers_container: VBoxContainer = animation_timeline.find_node("LayersContainer")
-onready var frames_container: VBoxContainer = animation_timeline.find_node("FramesContainer")
-onready var tag_container: Control = animation_timeline.find_node("TagContainer")
 onready var remove_frame_button: BaseButton = animation_timeline.find_node("DeleteFrame")
 onready var move_left_frame_button: BaseButton = animation_timeline.find_node("MoveLeft")
 onready var move_right_frame_button: BaseButton = animation_timeline.find_node("MoveRight")
@@ -159,21 +214,27 @@ onready var remove_layer_button: BaseButton = animation_timeline.find_node("Remo
 onready var move_up_layer_button: BaseButton = animation_timeline.find_node("MoveUpLayer")
 onready var move_down_layer_button: BaseButton = animation_timeline.find_node("MoveDownLayer")
 onready var merge_down_layer_button: BaseButton = animation_timeline.find_node("MergeDownLayer")
-onready var layer_opacity_slider: HSlider = animation_timeline.find_node("OpacitySlider")
-onready var layer_opacity_spinbox: SpinBox = animation_timeline.find_node("OpacitySpinBox")
+onready var layer_opacity_slider: ValueSlider = animation_timeline.find_node("OpacitySlider")
 
+onready var tile_mode_offset_dialog: AcceptDialog = control.find_node("TileModeOffsetsDialog")
 onready var open_sprites_dialog: FileDialog = control.find_node("OpenSprite")
 onready var save_sprites_dialog: FileDialog = control.find_node("SaveSprite")
 onready var save_sprites_html5_dialog: ConfirmationDialog = control.find_node("SaveSpriteHTML5")
 onready var export_dialog: AcceptDialog = control.find_node("ExportDialog")
 onready var preferences_dialog: AcceptDialog = control.find_node("PreferencesDialog")
 onready var error_dialog: AcceptDialog = control.find_node("ErrorDialog")
-onready var quit_and_save_dialog: ConfirmationDialog = control.find_node("QuitAndSaveDialog")
 
 onready var current_version: String = ProjectSettings.get_setting("application/config/Version")
 
 
+func _init() -> void:
+	if ProjectSettings.get_setting("display/window/tablet_driver") == "winink":
+		tablet_driver = 1
+
+
 func _ready() -> void:
+	_initialize_keychain()
+
 	if OS.has_feature("standalone"):
 		root_directory = OS.get_executable_path().get_base_dir()
 	# root_directory must be set earlier than this is because XDGDataDirs depends on it
@@ -190,23 +251,186 @@ func _ready() -> void:
 	var proj_size := Vector2(default_width, default_height)
 	projects.append(Project.new([], tr("untitled"), proj_size))
 	current_project = projects[0]
-	current_project.layers.append(Layer.new())
 	current_project.fill_color = default_fill_color
-	var frame: Frame = current_project.new_empty_frame()
-	current_project.frames.append(frame)
 
 	for node in get_tree().get_nodes_in_group("UIButtons"):
 		var tooltip: String = node.hint_tooltip
 		if !tooltip.empty() and node.shortcut:
 			ui_tooltips[node] = tooltip
+	yield(get_tree(), "idle_frame")
+	emit_signal("project_changed")
+
+
+func _initialize_keychain() -> void:
+	Keychain.config_file = config_cache
+	Keychain.actions = {
+		"new_file": Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.NEW),
+		"open_file": Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.OPEN),
+		"open_last_project":
+		Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.OPEN_LAST_PROJECT),
+		"save_file": Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.SAVE),
+		"save_file_as":
+		Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.SAVE_AS),
+		"export_file":
+		Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.EXPORT),
+		"export_file_as":
+		Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.EXPORT_AS),
+		"quit": Keychain.MenuInputAction.new("", "File menu", true, "FileMenu", FileMenu.QUIT),
+		"redo":
+		Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.REDO, true),
+		"undo":
+		Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.UNDO, true),
+		"cut": Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.CUT),
+		"copy": Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.COPY),
+		"paste": Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.PASTE),
+		"paste_in_place":
+		Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.PASTE_IN_PLACE),
+		"delete": Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.DELETE),
+		"new_brush":
+		Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.NEW_BRUSH),
+		"preferences":
+		Keychain.MenuInputAction.new("", "Edit menu", true, "EditMenu", EditMenu.PREFERENCES),
+		"scale_image":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.SCALE_IMAGE),
+		"crop_image":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.CROP_IMAGE),
+		"resize_canvas":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.RESIZE_CANVAS),
+		"offset_image":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.OFFSET_IMAGE),
+		"mirror_image":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.FLIP),
+		"rotate_image":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.ROTATE),
+		"invert_colors":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.INVERT_COLORS),
+		"desaturation":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.DESATURATION),
+		"outline":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.OUTLINE),
+		"drop_shadow":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.DROP_SHADOW),
+		"adjust_hsv":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.HSV),
+		"gradient":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.GRADIENT),
+		"gradient_map":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.GRADIENT_MAP),
+		"posterize":
+		Keychain.MenuInputAction.new("", "Image menu", true, "ImageMenu", ImageMenu.POSTERIZE),
+		"mirror_view":
+		Keychain.MenuInputAction.new("", "View menu", true, "ViewMenu", ViewMenu.MIRROR_VIEW),
+		"show_grid":
+		Keychain.MenuInputAction.new("", "View menu", true, "ViewMenu", ViewMenu.SHOW_GRID),
+		"show_pixel_grid":
+		Keychain.MenuInputAction.new("", "View menu", true, "ViewMenu", ViewMenu.SHOW_PIXEL_GRID),
+		"show_guides":
+		Keychain.MenuInputAction.new("", "View menu", true, "ViewMenu", ViewMenu.SHOW_GUIDES),
+		"show_rulers":
+		Keychain.MenuInputAction.new("", "View menu", true, "ViewMenu", ViewMenu.SHOW_RULERS),
+		"moveable_panels":
+		Keychain.MenuInputAction.new(
+			"", "Window menu", true, "WindowMenu", WindowMenu.MOVABLE_PANELS
+		),
+		"zen_mode":
+		Keychain.MenuInputAction.new("", "Window menu", true, "WindowMenu", WindowMenu.ZEN_MODE),
+		"toggle_fullscreen":
+		Keychain.MenuInputAction.new(
+			"", "Window menu", true, "WindowMenu", WindowMenu.FULLSCREEN_MODE
+		),
+		"clear_selection":
+		Keychain.MenuInputAction.new(
+			"", "Select menu", true, "SelectMenu", SelectMenu.CLEAR_SELECTION
+		),
+		"select_all":
+		Keychain.MenuInputAction.new("", "Select menu", true, "SelectMenu", SelectMenu.SELECT_ALL),
+		"invert_selection":
+		Keychain.MenuInputAction.new("", "Select menu", true, "SelectMenu", SelectMenu.INVERT),
+		"view_splash_screen":
+		Keychain.MenuInputAction.new(
+			"", "Help menu", true, "HelpMenu", HelpMenu.VIEW_SPLASH_SCREEN
+		),
+		"open_docs":
+		Keychain.MenuInputAction.new("", "Help menu", true, "HelpMenu", HelpMenu.ONLINE_DOCS),
+		"issue_tracker":
+		Keychain.MenuInputAction.new("", "Help menu", true, "HelpMenu", HelpMenu.ISSUE_TRACKER),
+		"open_logs_folder":
+		Keychain.MenuInputAction.new("", "Help menu", true, "HelpMenu", HelpMenu.OPEN_LOGS_FOLDER),
+		"changelog":
+		Keychain.MenuInputAction.new("", "Help menu", true, "HelpMenu", HelpMenu.CHANGELOG),
+		"about_pixelorama":
+		Keychain.MenuInputAction.new("", "Help menu", true, "HelpMenu", HelpMenu.ABOUT_PIXELORAMA),
+		"zoom_in": Keychain.InputAction.new("", "Canvas"),
+		"zoom_out": Keychain.InputAction.new("", "Canvas"),
+		"camera_left": Keychain.InputAction.new("", "Canvas"),
+		"camera_right": Keychain.InputAction.new("", "Canvas"),
+		"camera_up": Keychain.InputAction.new("", "Canvas"),
+		"camera_down": Keychain.InputAction.new("", "Canvas"),
+		"pan": Keychain.InputAction.new("", "Canvas"),
+		"activate_left_tool": Keychain.InputAction.new("", "Canvas"),
+		"activate_right_tool": Keychain.InputAction.new("", "Canvas"),
+		"move_mouse_left": Keychain.InputAction.new("", "Cursor movement"),
+		"move_mouse_right": Keychain.InputAction.new("", "Cursor movement"),
+		"move_mouse_up": Keychain.InputAction.new("", "Cursor movement"),
+		"move_mouse_down": Keychain.InputAction.new("", "Cursor movement"),
+		"switch_colors": Keychain.InputAction.new("", "Buttons"),
+		"go_to_first_frame": Keychain.InputAction.new("", "Buttons"),
+		"go_to_last_frame": Keychain.InputAction.new("", "Buttons"),
+		"go_to_previous_frame": Keychain.InputAction.new("", "Buttons"),
+		"go_to_next_frame": Keychain.InputAction.new("", "Buttons"),
+		"play_backwards": Keychain.InputAction.new("", "Buttons"),
+		"play_forward": Keychain.InputAction.new("", "Buttons"),
+		"change_tool_mode": Keychain.InputAction.new("", "Tool modifiers", false),
+		"draw_create_line": Keychain.InputAction.new("", "Draw tools", false),
+		"draw_snap_angle": Keychain.InputAction.new("", "Draw tools", false),
+		"draw_color_picker": Keychain.InputAction.new("Quick color picker", "Draw tools", false),
+		"shape_perfect": Keychain.InputAction.new("", "Shape tools", false),
+		"shape_center": Keychain.InputAction.new("", "Shape tools", false),
+		"shape_displace": Keychain.InputAction.new("", "Shape tools", false),
+		"selection_add": Keychain.InputAction.new("", "Selection tools", false),
+		"selection_subtract": Keychain.InputAction.new("", "Selection tools", false),
+		"selection_intersect": Keychain.InputAction.new("", "Selection tools", false),
+		"transformation_confirm": Keychain.InputAction.new("", "Transformation tools", false),
+		"transformation_cancel": Keychain.InputAction.new("", "Transformation tools", false),
+		"transform_snap_axis": Keychain.InputAction.new("", "Transformation tools", false),
+		"transform_snap_grid": Keychain.InputAction.new("", "Transformation tools", false),
+		"transform_move_selection_only":
+		Keychain.InputAction.new("", "Transformation tools", false),
+		"transform_copy_selection_content":
+		Keychain.InputAction.new("", "Transformation tools", false),
+	}
+
+	Keychain.groups = {
+		"Canvas": Keychain.InputGroup.new("", false),
+		"Cursor movement": Keychain.InputGroup.new("Canvas"),
+		"Buttons": Keychain.InputGroup.new(),
+		"Tools": Keychain.InputGroup.new(),
+		"Left": Keychain.InputGroup.new("Tools"),
+		"Right": Keychain.InputGroup.new("Tools"),
+		"Menu": Keychain.InputGroup.new(),
+		"File menu": Keychain.InputGroup.new("Menu"),
+		"Edit menu": Keychain.InputGroup.new("Menu"),
+		"View menu": Keychain.InputGroup.new("Menu"),
+		"Select menu": Keychain.InputGroup.new("Menu"),
+		"Image menu": Keychain.InputGroup.new("Menu"),
+		"Window menu": Keychain.InputGroup.new("Menu"),
+		"Help menu": Keychain.InputGroup.new("Menu"),
+		"Tool modifiers": Keychain.InputGroup.new(),
+		"Draw tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Shape tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Selection tools": Keychain.InputGroup.new("Tool modifiers"),
+		"Transformation tools": Keychain.InputGroup.new("Tool modifiers"),
+	}
+	Keychain.ignore_actions = ["left_mouse", "right_mouse", "middle_mouse", "shift", "ctrl"]
+	Keychain.multiple_menu_accelerators = true
 
 
 func notification_label(text: String) -> void:
-	var notification: Label = notification_label_node.instance()
+	var notification := NotificationLabel.new()
 	notification.text = tr(text)
-	notification.rect_position = Vector2(70, animation_timeline.rect_position.y)
-	notification.theme = control.theme
-	get_tree().get_root().add_child(notification)
+	notification.rect_position = main_viewport.rect_global_position
+	notification.rect_position.y += main_viewport.rect_size.y
+	control.add_child(notification)
 
 
 func general_undo(project: Project = current_project) -> void:
@@ -239,7 +463,7 @@ func undo_or_redo(
 			"Select",
 			"Move Selection",
 			"Scale",
-			"Centralize",
+			"Center Frames",
 			"Merge Layer",
 			"Link Cel",
 			"Unlink Cel"
@@ -254,22 +478,22 @@ func undo_or_redo(
 
 		canvas.selection.update()
 		if action_name == "Scale":
+			for i in project.frames.size():
+				for j in project.layers.size():
+					var current_cel: BaseCel = project.frames[i].cels[j]
+					if current_cel is Cel3D:
+						current_cel.size_changed(project.size)
+					else:
+						current_cel.image_texture.create_from_image(current_cel.get_image(), 0)
 			canvas.camera_zoom()
 			canvas.grid.update()
 			canvas.pixel_grid.update()
+			project.selection_map_changed()
 			cursor_position_label.text = "[%s×%s]" % [project.size.x, project.size.y]
 
-	elif "Frame" in action_name:
-		# This actually means that frames.size is one, but it hasn't been updated yet
-		if (undo and project.frames.size() == 2) or project.frames.size() == 1:  # Stop animating
-			play_forward.pressed = false
-			play_backwards.pressed = false
-			animation_timer.stop()
-
-	elif "Move Cels" == action_name:
-		project.frames = project.frames  # to call frames_changed
-
 	canvas.update()
+	second_viewport.get_child(0).get_node("CanvasPreview").update()
+	canvas_preview_container.canvas_preview.update()
 	if !project.has_changed:
 		project.has_changed = true
 		if project == current_project:
@@ -285,7 +509,32 @@ func _project_changed(value: int) -> void:
 	canvas.selection.transform_content_confirm()
 	current_project_index = value
 	current_project = projects[value]
-	current_project.change_project()
+	connect("project_changed", current_project, "change_project")
+	emit_signal("project_changed")
+	disconnect("project_changed", current_project, "change_project")
+	emit_signal("cel_changed")
+
+
+func _renderer_changed(value: int) -> void:
+	renderer = value
+	if OS.has_feature("editor"):
+		return
+
+	# Sets GLES2 as the default value in `override.cfg`.
+	# Without this, switching to GLES3 does not work, because it will default to GLES2.
+	ProjectSettings.set_initial_value("rendering/quality/driver/driver_name", "GLES2")
+	var renderer_name := OS.get_video_driver_name(renderer)
+	ProjectSettings.set_setting("rendering/quality/driver/driver_name", renderer_name)
+	ProjectSettings.save_custom(OVERRIDE_FILE)
+
+
+func _tablet_driver_changed(value: int) -> void:
+	tablet_driver = value
+	if OS.has_feature("editor"):
+		return
+	var tablet_driver_name := OS.get_tablet_driver_name(tablet_driver)
+	ProjectSettings.set_setting("display/window/tablet_driver", tablet_driver_name)
+	ProjectSettings.save_custom(OVERRIDE_FILE)
 
 
 func dialog_open(open: bool) -> void:
@@ -297,11 +546,8 @@ func dialog_open(open: bool) -> void:
 	else:
 		can_draw = true
 
-	control.get_node("ModulateTween").interpolate_property(
-		control, "modulate", control.modulate, dim_color, 0.1, Tween.TRANS_LINEAR, Tween.EASE_OUT
-	)
-
-	control.get_node("ModulateTween").start()
+	var tween := create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
+	tween.tween_property(control, "modulate", dim_color, 0.1)
 
 
 func disable_button(button: BaseButton, disable: bool) -> void:
@@ -319,14 +565,41 @@ func disable_button(button: BaseButton, disable: bool) -> void:
 
 
 func change_button_texturerect(texture_button: TextureRect, new_file_name: String) -> void:
+	if !texture_button.texture:
+		return
 	var file_name := texture_button.texture.resource_path.get_basename().get_file()
 	var directory_path := texture_button.texture.resource_path.get_basename().replace(file_name, "")
 	texture_button.texture = load(directory_path.plus_file(new_file_name))
 
 
 func update_hint_tooltips() -> void:
-	var tool_buttons: Container = control.find_node("ToolButtons")
-	tool_buttons.update_hintooltips()
+	yield(get_tree(), "idle_frame")
+	Tools.update_hint_tooltips()
 
 	for tip in ui_tooltips:
-		tip.hint_tooltip = tr(ui_tooltips[tip]) % tip.shortcut.get_as_text()
+		var hint := "None"
+		var event_type: InputEvent = tip.shortcut.shortcut
+		if event_type is InputEventKey:
+			hint = event_type.as_text()
+		elif event_type is InputEventAction:
+			var first_key: InputEventKey = Keychain.action_get_first_key(event_type.action)
+			hint = first_key.as_text() if first_key else "None"
+		tip.hint_tooltip = tr(ui_tooltips[tip]) % hint
+
+
+# Used in case some of the values in a dictionary are Strings, when they should be something else
+func convert_dictionary_values(dict: Dictionary) -> void:
+	for key in dict:
+		if key == "id" or key == "type":
+			dict[key] = int(dict[key])
+		if typeof(dict[key]) != TYPE_STRING:
+			continue
+		if "transform" in key:  # Convert a String to a Transform
+			var transform_string: String = dict[key].replace(" - ", ", ")
+			dict[key] = str2var("Transform(" + transform_string + ")")
+		elif "color" in key:  # Convert a String to a Color
+			dict[key] = str2var("Color(" + dict[key] + ")")
+		elif "v2" in key:  # Convert a String to a Vector2
+			dict[key] = str2var("Vector2" + dict[key])
+		elif "size" in key or "center_offset" in key:  # Convert a String to a Vector3
+			dict[key] = str2var("Vector3" + dict[key])

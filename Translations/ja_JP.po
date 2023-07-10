@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
-"PO-Revision-Date: 2022-01-05 19:26\n"
+"PO-Revision-Date: 2023-07-04 12:07\n"
 
 msgid "OK"
 msgstr "OK"
@@ -66,6 +66,9 @@ msgstr "選択"
 msgid "View"
 msgstr "表示"
 
+msgid "Window"
+msgstr "ウインドウ"
+
 msgid "Image"
 msgstr "画像"
 
@@ -99,6 +102,9 @@ msgstr "インポート"
 msgid "Export"
 msgstr "エクスポート"
 
+msgid "Overwrite"
+msgstr "上書き"
+
 msgid "Export..."
 msgstr "エクスポート..."
 
@@ -129,6 +135,9 @@ msgstr "カット"
 msgid "Paste"
 msgstr "ペースト"
 
+msgid "Paste in Place"
+msgstr "現在の場所に貼り付け"
+
 msgid "Delete"
 msgstr "削除"
 
@@ -150,11 +159,36 @@ msgstr "画像のトリミング"
 msgid "Resize Canvas"
 msgstr "キャンバスサイズを変更"
 
+msgid "Offset Image"
+msgstr "オフセット画像"
+
+msgid "Offset:"
+msgstr "オフセット:"
+
+#. Found in the Offset Image dialog. It's a checkbox that, if enabled, wraps around the image if pixels go out of canvas bounds.
+msgid "Wrap around:"
+msgstr "ラップアラウンド"
+
 msgid "Centralize Image"
 msgstr "画像を中央に"
 
 msgid "Rotate Image"
 msgstr "画像を回転"
+
+msgid "Pivot x:"
+msgstr "中心 x:"
+
+msgid "Pivot y:"
+msgstr "中心 y:"
+
+msgid "Smear options:"
+msgstr "スミアオプション:"
+
+msgid "Tolerance:"
+msgstr "許容範囲:"
+
+msgid "Initial angle:"
+msgstr "初期角度:"
 
 msgid "Clear"
 msgstr "削除"
@@ -162,8 +196,11 @@ msgstr "削除"
 msgid "Invert"
 msgstr "反転"
 
-msgid "Flip"
-msgstr "反転"
+msgid "Grayscale View"
+msgstr "グレースケール表示"
+
+msgid "Mirror Image"
+msgstr "ミラー画像"
 
 msgid "Flip Horizontal"
 msgstr "水平方向に反転"
@@ -177,11 +214,77 @@ msgstr "設定"
 msgid "Tile Mode"
 msgstr "タイルモード"
 
+msgid "Tile Mode Offsets"
+msgstr "タイルモードのオフセット"
+
+msgid "X-basis x:"
+msgstr "X基底 x:"
+
+msgid "X-basis y:"
+msgstr "X基底 y:"
+
+msgid "Y-basis x:"
+msgstr "Y基底 x:"
+
+msgid "Y-basis y:"
+msgstr "Y基底 y:"
+
+msgid "Tile Mask"
+msgstr "タイルマスク"
+
+msgid "Reset"
+msgstr "初期化"
+
+msgid "Use Current Frame"
+msgstr "現在のフレームを使用"
+
+msgid "Reset Mask"
+msgstr "マスクを初期化"
+
 msgid "Window Opacity"
 msgstr "ウィンドウ不透明度"
 
+msgid "Window opacity does not work on fullscreen mode."
+msgstr "ウィンドウの不透明度はフルスクリーンモードでは機能しません。"
+
 msgid "Panel Layout"
 msgstr "パネルのレイアウト"
+
+msgid "Panels"
+msgstr "パネル"
+
+msgid "Layouts"
+msgstr "レイアウト"
+
+msgid "Moveable Panels"
+msgstr "可動パネル"
+
+msgid "Manage Layouts"
+msgstr "レイアウト管理"
+
+#. Noun, a preview of something
+msgid "Preview"
+msgstr "プレビュー"
+
+#. Found in the manage layouts dialog
+msgid "This is a preview, changing this won't change the layout"
+msgstr "これはプレビューです。レイアウトは変更されません。"
+
+#. Found in the manage layouts dialog
+msgid "Double click to set as new startup layout"
+msgstr "ダブルクリックして新規スタートアップレイアウトとして設定"
+
+msgid "Add"
+msgstr "追加"
+
+msgid "Add Layout"
+msgstr "レイアウトを追加"
+
+msgid "Edit Layout"
+msgstr "レイアウトを編集"
+
+msgid "Are you sure you want to delete this layout?"
+msgstr "本当にこのレイアウトを削除してよろしいですか？"
 
 msgid "Auto"
 msgstr "オート"
@@ -207,6 +310,26 @@ msgstr "ルーラーを表示"
 msgid "Show Guides"
 msgstr "ガイドを表示"
 
+#. Found under the View menu.
+msgid "Show Mouse Guides"
+msgstr "マウスガイドを表示"
+
+#. Found under the View menu.
+msgid "Snap To"
+msgstr "スナップ先"
+
+#. Found under the View menu.
+msgid "Snap to Rectangular Grid"
+msgstr "矩形グリッドにスナップ"
+
+#. Found under the View menu.
+msgid "Snap to Guides"
+msgstr "ガイドにスナップ"
+
+#. Found under the View menu.
+msgid "Snap to Perspective Guides"
+msgstr "視点ガイドにスナップ"
+
 msgid "Show Animation Timeline"
 msgstr "アニメーションのタイムラインを表示"
 
@@ -231,14 +354,17 @@ msgstr "インポートオプション"
 msgid "Import as:"
 msgstr "形式を指定してインポート"
 
+msgid "Apply to all"
+msgstr "すべてに適用"
+
 msgid "Recent projects"
 msgstr "最近のプロジェクト"
 
-msgid "New tab"
-msgstr "新しいタブ"
+msgid "New project"
+msgstr "新規プロジェクト"
 
-msgid "Spritesheet (new tab)"
-msgstr "スプライトシート（新規タブ）"
+msgid "Spritesheet (new project)"
+msgstr "スプライトシート(新規プロジェクト)"
 
 msgid "Spritesheet (new layer)"
 msgstr "スプライトシート (新規レイヤー)"
@@ -246,11 +372,14 @@ msgstr "スプライトシート (新規レイヤー)"
 msgid "New frame"
 msgstr "新しいフレーム"
 
-msgid "Replace frame"
-msgstr "フレームを置換"
+msgid "Replace cel"
+msgstr "セルを置換"
 
 msgid "New layer"
 msgstr "新規レイヤー"
+
+msgid "New reference image"
+msgstr "新しい参照画像"
 
 msgid "New palette"
 msgstr "新しいパレット"
@@ -269,6 +398,9 @@ msgstr "垂直フレーム"
 
 msgid "Start frame:"
 msgstr "開始フレーム:"
+
+msgid "End frame:"
+msgstr "終了フレーム:"
 
 msgid "At frame:"
 msgstr "すべてのフレーム:"
@@ -300,19 +432,35 @@ msgstr "スプライトをエクスポート"
 msgid "File Exists, Overwrite?"
 msgstr "ファイルが存在します。上書きしますか？"
 
-msgid "File %s already exists. Overwrite?"
-msgstr "ファイル %s は既に存在しています。上書きしますか？"
+msgid "The following files already exist. Do you wish to overwrite them?\n"
+"%s"
+msgstr "以下のファイルは既に存在します。上書きしますか？\n"
+"%s"
 
-msgid "Directory path or file name is not valid!"
-msgstr "ディレクトリパスまたはファイル名が無効です！"
+msgid "Directory path is not valid!"
+msgstr "ディレクトリパスが有効ではありません！"
+
+msgid "File name is not valid!"
+msgstr "ファイル名が有効ではありません！"
+
+msgid "Directory path and file name are not valid!"
+msgstr "ディレクトリパスとファイル名が無効です！"
 
 msgid "Exporting in progress..."
 msgstr "エクスポート中..."
+
+msgid "Can't load file '%s'."
+msgstr "ファイル '%s' を読み込めません。"
 
 msgid "Can't load file '%s'.\n"
 "Error code: %s"
 msgstr "ファイル '%s' を読み込むことができません。\n"
 "エラーコード: %s"
+
+msgid "Can't load file '%s'.\n"
+"This is not a valid palette file."
+msgstr "ファイル '%s' を読み込めません。\n"
+"これは有効なパレットファイルではありません。"
 
 msgid "Frame"
 msgstr "フレーム"
@@ -356,14 +504,35 @@ msgstr "現在のフォルダを選択"
 msgid "Open a Directory"
 msgstr "ディレクトリを開く"
 
-msgid "All frames as multiple files"
-msgstr "すべてのフレームを複数のファイルとしてエクスポート"
-
-msgid "All frames as a single file animation"
-msgstr "すべてのフレームを単一のアニメーションファイルとしてエクスポート"
-
 msgid "Background:"
 msgstr "バックグラウンド:"
+
+#. Found in the export dialog
+msgid "Selected frames"
+msgstr "選択したフレーム"
+
+msgid "Layers:"
+msgstr "レイヤー:"
+
+#. Found in the export dialog
+msgid "Visible layers"
+msgstr "表示レイヤー"
+
+#. Found in the export dialog
+msgid "Selected layers"
+msgstr "選択したレイヤー"
+
+#. A type of layer. A pixel layer is the most common type of layer, which stores image data in pixels.
+msgid "Pixel layer:"
+msgstr "ピクセルレイヤー:"
+
+#. A type of layer. A group layer stores other layers as its children, similar to how a folder holds files.
+msgid "Group layer:"
+msgstr "グループレイヤー:"
+
+#. A type of layer. A 3D layer contains data of 3D objects that are rasterized automatically by Pixelorama.
+msgid "3D layer:"
+msgstr "3Dレイヤー:"
 
 msgid "Direction:"
 msgstr "方向:"
@@ -389,6 +558,10 @@ msgstr "行"
 msgid "Rows:"
 msgstr "行:"
 
+#. Found in the export dialog. It is a label that says the dimensions (widthxheight) of the exported image(s).
+msgid "Export dimensions:"
+msgstr "寸法をエクスポート:"
+
 msgid "Path:"
 msgstr "パス:"
 
@@ -400,6 +573,10 @@ msgstr "フォルダーを作成"
 
 msgid "File:"
 msgstr "ファイル:"
+
+#. Found in the export dialog. It is a button that when pressed, shows more options.
+msgid "Advanced options"
+msgstr "詳細設定"
 
 msgid "Interpolation:"
 msgstr "補間:"
@@ -415,6 +592,9 @@ msgstr "キュービック"
 
 msgid "Trilinear"
 msgstr "トライリニア"
+
+msgid "Constant"
+msgstr "固定"
 
 msgid "General"
 msgstr "一般"
@@ -434,6 +614,10 @@ msgstr "テーマ"
 msgid "Canvas"
 msgstr "キャンバス"
 
+#. Refers to the animation timeline.
+msgid "Timeline"
+msgstr "タイムライン"
+
 msgid "Selection"
 msgstr "選択範囲"
 
@@ -446,8 +630,22 @@ msgstr "バックアップ"
 msgid "Performance"
 msgstr "パフォーマンス"
 
+#. Found in the preferences. Refers to device drivers, such as video drivers and tablet drivers.
+msgid "Drivers"
+msgstr "ドライバー"
+
+msgid "Extensions"
+msgstr "拡張機能"
+
+msgid "Cursors"
+msgstr "カーソル"
+
 msgid "Indicators"
 msgstr "インジケーター"
+
+#. Found in the preferences. Used for options that require restart when they are changed.
+msgid "Pixelorama must be restarted for changes to take effect."
+msgstr "変更を有効にするには、Pixeloramaを再起動する必要があります。"
 
 msgid "On"
 msgstr "オン"
@@ -479,8 +677,8 @@ msgstr "ガイドの色:"
 msgid "System Language"
 msgstr "システム言語"
 
-msgid "Display Scale"
-msgstr "表示スケール"
+msgid "Display scale:"
+msgstr "表示スケール:"
 
 msgid "Dim interface on dialog popup"
 msgstr "ダイアログポップアップ時にインターフェースを薄暗くする"
@@ -506,11 +704,29 @@ msgstr "紫"
 msgid "Theme"
 msgstr "テーマ"
 
+msgid "Buttons"
+msgstr "ボタン"
+
 msgid "Icon color from:"
 msgstr "次のもののアイコンの色:"
 
 msgid "Icon color:"
 msgstr "アイコンの色:"
+
+msgid "Background"
+msgstr "背景"
+
+msgid "Background color from:"
+msgstr "背景色の参照元:"
+
+msgid "Background color:"
+msgstr "背景色:"
+
+msgid "Left tool color:"
+msgstr "左ツールの色:"
+
+msgid "Right tool color:"
+msgstr "右ツールの色:"
 
 msgid "Tool button size:"
 msgstr "ツールボタンのサイズ:"
@@ -560,11 +776,74 @@ msgstr "彩度を下げる"
 msgid "Outline"
 msgstr "アウトライン"
 
+msgid "Drop Shadow"
+msgstr "ドロップシャドウ"
+
+msgid "Offset X:"
+msgstr "オフセット X:"
+
+msgid "Offset Y:"
+msgstr "オフセット Y:"
+
+msgid "Shadow color:"
+msgstr "影の色:"
+
 msgid "Adjust Hue/Saturation/Value"
 msgstr "色相/彩度/値を調整"
 
 msgid "Gradient"
 msgstr "グラディエーション"
+
+msgid "Gradient Map"
+msgstr "グラデーションマップ"
+
+msgid "Divide into equal parts"
+msgstr "等しいパーツに分割"
+
+msgid "Parts:"
+msgstr "パーツ:"
+
+msgid "Add point at the end"
+msgstr "最後にポイントを追加"
+
+msgid "If this is enabled, the last point gets added at the end of the gradient.\n"
+"Disable this if you wish to convert the gradient to have constant interpolation, so that the last color will be taken into account."
+msgstr "これが有効な場合、最後のポイントはグラデーションの最後に追加されます。\n"
+"グラデーションを一定の補間に変換したい場合は、これを無効にします。"
+
+msgid "Shape:"
+msgstr "形状："
+
+msgid "Linear"
+msgstr "線形"
+
+msgid "Radial"
+msgstr "放射状"
+
+#. Found in the Gradient dialog, under the image menu. Specifies if the gradient will repeat or not.
+msgid "Repeat:"
+msgstr "リピート："
+
+#. Found in the Gradient dialog, under the image menu. Specifies if the gradient will repeat or not.
+msgid "Repeat"
+msgstr "リピート"
+
+#. Found in the Gradient dialog, under the image menu. It is one of the repeat options.
+msgid "Mirror"
+msgstr "反転"
+
+#. Found in the Gradient dialog, under the image menu. It is one of the repeat options. If Truncate is selected, the gradient gets cut at the edges.
+msgid "Truncate"
+msgstr "切り捨て"
+
+msgid "Transition size:"
+msgstr "トランジションサイズ:"
+
+msgid "Center:"
+msgstr "中心:"
+
+msgid "Dithering pattern:"
+msgstr "ディザリングパターン:"
 
 msgid "Adjust HSV"
 msgstr "HSVを調整"
@@ -602,17 +881,17 @@ msgstr "色:"
 msgid "Steps:"
 msgstr "手順:"
 
-msgid "Top to Bottom"
-msgstr "上から下"
+#. An image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
+msgid "Posterize"
+msgstr "ポスタライズ"
 
-msgid "Bottom to Top"
-msgstr "下から上へ"
+#. An option for the posterize image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
+msgid "Posterize levels:"
+msgstr "ポスタライズレベル:"
 
-msgid "Left to Right"
-msgstr "左から右"
-
-msgid "Right to Left"
-msgstr "右から左"
+#. An option for the posterize image effect.
+msgid "Dither intensity:"
+msgstr "ディザー強度:"
 
 msgid "View Splash Screen"
 msgstr "スプラッシュ スクリーンを表示"
@@ -740,6 +1019,21 @@ msgstr "日本語"
 msgid "Ukrainian"
 msgstr "ウクライナ語"
 
+msgid "Danish"
+msgstr "デンマーク語"
+
+msgid "Swedish"
+msgstr "スウェーデン語"
+
+msgid "Serbian (Cyrillic)"
+msgstr "セルビア語 (キリル文字)"
+
+msgid "Dutch"
+msgstr "オランダ語"
+
+msgid "Belarusian"
+msgstr "ベラルーシ語"
+
 msgid "Development Team"
 msgstr "Development Team"
 
@@ -799,14 +1093,14 @@ msgstr "楕円形選択\n\n"
 "%sでマウスの左ボタンを 楕円形選択 に変更\n"
 "%sでマウスの右ボタンを 楕円形選択 に変更"
 
-msgid "Polygonal Selection\n"
-"Double-click to connect the last point to the starting point\n\n"
+msgid "Polygonal Selection\n\n"
 "%s for left mouse button\n"
-"%s for right mouse button"
-msgstr "多角形選択\n"
-"最後の点を開始点に接続するにはダブルクリック\n\n"
+"%s for right mouse button\n\n"
+"Double-click to connect the last point to the starting point"
+msgstr "多角形選択\n\n\n"
 "%sでマウスの左ボタンを 多角形選択 に変更\n"
-"%sでマウスの右ボタンを 多角形選択 に変更"
+"%sでマウスの右ボタンを 多角形選択 に変更\n\n"
+"ダブルクリックで始点と終点を接続します"
 
 msgid "Select By Color\n\n"
 "%s for left mouse button\n"
@@ -850,14 +1144,14 @@ msgstr "パン\n\n"
 "%sでマウスの左ボタンを パン に変更\n"
 "%sでマウスの右ボタンを パン に変更"
 
-msgid "Color Picker\n"
-"Select a color from a pixel of the sprite\n\n"
+msgid "Color Picker\n\n"
 "%s for left mouse button\n"
-"%s for right mouse button"
-msgstr "カラーピッカー\n"
-"スプライトのピクセルから色を選択してください。\n\n"
-"%sでマウスの左ボタンを カラーピッカー に変更\n"
-"%sでマウスの右ボタンを カラーピッカー に変更"
+"%s for right mouse button\n\n"
+"Select a color from a pixel of the sprite"
+msgstr "色選択\n\n\n"
+"%sでマウスの左ボタンを 色選択 に変更\n"
+"%sでマウスの右ボタンを 色選択 に変更\n\n"
+"画像のピクセルから色を選択します"
 
 msgid "Pencil\n\n"
 "%s for left mouse button\n"
@@ -980,6 +1274,12 @@ msgstr "マウスの右ボタンのツールのアイコンを表示"
 msgid "Displays an icon of the selected right tool next to the cursor on the canvas"
 msgstr "キャンバス上のカーソルの隣に選択したマウスの右ボタンのツールのアイコンを表示します"
 
+msgid "Use native mouse cursors"
+msgstr "通常のマウスカーソルを使用"
+
+msgid "Use cross cursor for the canvas"
+msgstr "キャンバスにクロスカーソルを使用"
+
 msgid "Guides"
 msgstr "ガイド"
 
@@ -988,6 +1288,18 @@ msgstr "ガイドの色:"
 
 msgid "A color of ruler guides displayed on the canvas"
 msgstr "キャンバスに表示されるルーラーガイドの色"
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping.
+msgid "Snapping"
+msgstr "スナップ"
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping.
+msgid "Snapping distance:"
+msgstr "スナップ距離:"
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping. Hint tooltip of the snapping distance slider.
+msgid "This is the distance in pixels where guide and grid snapping gets activated."
+msgstr "これは、ガイドとグリッドのスナップが有効になるピクセル単位の距離です。"
 
 msgid "Grid"
 msgstr "グリッド"
@@ -1007,41 +1319,21 @@ msgstr "アイソメトリック"
 msgid "All"
 msgstr "すべて"
 
-msgid "Rectangular grid width:"
-msgstr "矩形グリッドの幅:"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Rectangular grid size:"
+msgstr "矩形グリッドのサイズ:"
 
-msgid "Sets how far apart are vertical lines of the rectangular grid"
-msgstr "矩形グリッドの垂直方向の線の間隔を設定します"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Isometric grid size:"
+msgstr "等角グリッドのサイズ:"
 
-msgid "Rectangular grid height:"
-msgstr "矩形グリッドの高さ:"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Grid offset:"
+msgstr "グリッドオフセット:"
 
-msgid "Sets how far apart are horizontal lines of the rectangular grid"
-msgstr "矩形グリッドの水平方向の線の間隔を設定します"
-
-msgid "Isometric cell bounds width:"
-msgstr "等角セルの境界の幅:"
-
-msgid "Sets the width of the isometric cell's axis aligned bounding box"
-msgstr "等角セルの軸揃えの境界ボックスの幅を設定します"
-
-msgid "Isometric cell bounds height:"
-msgstr "等角セルの境界の高さ:"
-
-msgid "Sets the height of the isometric cell's axis aligned bounding box"
-msgstr "等角セルの軸揃えの境界ボックスの高さを設定します"
-
-msgid "Grid offset x:"
-msgstr "グリッドオフセット x:"
-
-msgid "Sets grid's x offset from the canvas origin (top left corner of the image)"
-msgstr "キャンバスの原点 (画像の左上隅) からのグリッドの x オフセットを設定します。"
-
-msgid "Grid offset y:"
-msgstr "グリッドオフセット y:"
-
-msgid "Sets grid's y offset from the canvas origin (top left corner of the image)"
-msgstr "キャンバスの原点 (画像の左上隅) からのグリッドの y オフセットを設定します。"
+#. Found in the Preferences, in the Canvas tab. Hint tooltip of the grid offset value sliders.
+msgid "Sets grid's offset from the canvas origin (top left corner of the image)"
+msgstr "キャンバスの原点 (画像の左上隅) からのグリッドのオフセットを設定します。"
 
 msgid "Draw over Tile Mode:"
 msgstr "タイルモードの上に表示:"
@@ -1103,6 +1395,18 @@ msgstr "キャンバスのズームレベルをフォロー"
 msgid "The transparent checker follow the zoom level of canvas"
 msgstr "透明なチェッカーはキャンバスのズームレベルに従います"
 
+#. Found in the Preferences, under Timeline. If this is enabled, clicking on the layer buttons (such as lock, invisible etc) will automatically select that layer.
+msgid "Select layer when clicking on one of its buttons:"
+msgstr "いずれかのボタンをクリックしたときにレイヤーを選択:"
+
+#. Found in the Preferences, under Timeline. Changes the color of the past (previous) frames in onion skinning, if color mode is enabled.
+msgid "Onion skinning past color:"
+msgstr "オニオンスキンの前の色："
+
+#. Found in the Preferences, under Timeline. Changes the color of the past (previous) frames in onion skinning, if color mode is enabled.
+msgid "Onion skinning future color:"
+msgstr "オニオンスキンの後の色："
+
 msgid "Animated selection borders"
 msgstr "アニメーション化された範囲"
 
@@ -1127,6 +1431,73 @@ msgstr "アプリケーションのフレーム/秒の制限を設定します�
 msgid "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
 msgstr "これをオンにすると、アプリケーションのウィンドウがフォーカスを失ったときに一時停止します。 これはアイドル時のCPU使用率を低下させるのに役立ちます。マウスがアプリケーションのウィンドウに入ったとき、アプリケーションは一時停止を解除します。"
 
+#. Found in the Preferences, under Drivers. Specifies the renderer/video driver being used.
+msgid "Renderer:"
+msgstr "レンダラー:"
+
+#. Found in the Preferences, under Drivers. Hint tooltip of the renderer option.
+msgid "Specifies the renderer/video driver being used. GLES2 is better for older and low-end devices, but GLES3 may offer more features."
+msgstr "使用するレンダラー/ビデオドライバーを指定します。古いデバイスやローエンドデバイスでは、GLES2が優れていますが、GLES3にはより多くの機能が提供される可能性があります。"
+
+#. Found in the Preferences, under Drivers. Specifies the tablet driver being used on Windows.
+msgid "Tablet driver:"
+msgstr "タブレットドライバー:"
+
+#. Found in the Preferences, under Drivers. Hint tooltip of the tablet driver option.
+msgid "Specifies the tablet driver being used on Windows. If you have Windows Ink enabled, select winink."
+msgstr "Windowsで使用されているタブレットドライバを指定します。Windows Inkが有効になっている場合は、wininkを選択してください。"
+
+msgid "Add Extension"
+msgstr "拡張機能を追加"
+
+msgid "Enable"
+msgstr "有効"
+
+msgid "Disable"
+msgstr "無効"
+
+msgid "Uninstall"
+msgstr "アンインストール"
+
+msgid "Open Folder"
+msgstr "フォルダーを開く"
+
+#. Hint tooltip of a button in the Global Tool Settings. "Dynamics" let users affect certain brush parameters, such as their size and alpha, based on the pressure of the tablet pen, the velocity of the mouse or the pen, and more in the future.
+msgid "Dynamics"
+msgstr "ダイナミクス"
+
+#. Found in the Dynamics options menu. Pressure refers to tablet pen pressure.
+msgid "Pressure"
+msgstr "圧力"
+
+#. Found in the Dynamics options menu. Velocity refers to mouse or tablet pen velocity, meaning how fast it moves.
+msgid "Velocity"
+msgstr "速度"
+
+#. Refers to the alpha channel of the colors, in the RGBA color model. The alpha channel is responsible for the transparency of the color.
+msgid "Alpha"
+msgstr "アルファ"
+
+#. Refers to the size of a value, for example the size of a brush.
+msgid "Size"
+msgstr "サイズ"
+
+#. Found in the Dynamics options menu. Sets the limits of the brush property values, such as the minimum and maximum values of alpha and size.
+msgid "Value limits"
+msgstr "制限値"
+
+#. Found in the Dynamics options menu. Sets the thresholds of the dynamic properties, such as the minimum and maximum values of pressure and velocity.
+msgid "Thresholds"
+msgstr "しきい値"
+
+#. Noun, the start of something.
+msgid "Start"
+msgstr "スタート"
+
+#. Noun, the end of something.
+msgid "End"
+msgstr "エンド"
+
 msgid "Brush:"
 msgstr "ブラシ："
 
@@ -1148,7 +1519,7 @@ msgstr "カスタムブラシ"
 msgid "Brush size:"
 msgstr "ブラシのサイズ:"
 
-msgid "Overwrite Color"
+msgid "Overwrite color"
 msgstr "色を上書き"
 
 msgid "Overwrites color instead of blending it. This option is only relevant with colors that are not fully opaque"
@@ -1160,8 +1531,22 @@ msgstr "ピクセルパーフェクト"
 msgid "Fill inside"
 msgstr "中を塗りつぶす"
 
-msgid "Makes lines smooth by removing the extra pixels on the edges"
-msgstr "エッジの余分なピクセルを削除することで線を滑らかにします"
+#. Found in the tool options of the Pencil tool, and refers to the spacing between brush strokes.
+msgid "Spacing"
+msgstr "間隔"
+
+#. Found in the tool options of the Pencil tool if "Spacing" is enabled, and refers to the horizontal gap between brush strokes.
+msgid "Gap X:"
+msgstr "間隔 X:"
+
+#. Found in the tool options of the Pencil tool if "Spacing" is enabled, and refers to the vertical gap between brush strokes.
+msgid "Gap Y:"
+msgstr "間隔 Y:"
+
+msgid "Pixel Perfect\n"
+"Makes lines smooth by removing the extra pixels on the edges"
+msgstr "ピクセルパーフェクト\n"
+"角の余分なピクセルを除去することで線を滑らかにします"
 
 msgid "Fill Shape"
 msgstr "図形の塗りつぶし"
@@ -1175,21 +1560,30 @@ msgstr "ブラシの色"
 msgid "0: Color from the brush itself, 100: the currently selected color"
 msgstr "0: ブラシ自体の色、100: 現在選択されている色"
 
+#. Found in the bucket tool options.
 msgid "Fill area:"
-msgstr "塗りつぶし範囲:"
+msgstr "塗りつぶし領域:"
 
-msgid "Same color area"
-msgstr "同じ色の範囲"
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Similar area"
+msgstr "類似領域"
 
-msgid "Same color pixels"
-msgstr "同じ色のピクセル"
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Similar colors"
+msgstr "類似色"
+
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Whole selection"
+msgstr "全て選択"
 
 msgid "Fill with:"
 msgstr "次で塗りつぶし:"
 
-msgid "Selected Color"
+#. Found in the bucket tool options, one of the fill with options.
+msgid "Selected color"
 msgstr "選択中の色"
 
+#. Found in the bucket tool options, one of the fill with options.
 msgid "Pattern"
 msgstr "パターン"
 
@@ -1241,6 +1635,22 @@ msgstr "フレームに合わせる"
 msgid "100% Zoom"
 msgstr "100% ズーム"
 
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Replace selection"
+msgstr "選択部分を置換"
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Add to selection"
+msgstr "選択に追加"
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Subtract from selection"
+msgstr "選択範囲から減算"
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Intersection of selections"
+msgstr "選択範囲の交差"
+
 msgid "Mirroring"
 msgstr "ミラーリング"
 
@@ -1258,6 +1668,12 @@ msgstr "垂直方向"
 
 msgid "Current frame:"
 msgstr "現在のフレーム:"
+
+msgid "Animation mode:"
+msgstr "アニメーションモード:"
+
+msgid "Current frame as spritesheet"
+msgstr "スプライトシートとしての現在のフレーム"
 
 msgid "Jump to the first frame\n"
 "(%s)"
@@ -1350,8 +1766,9 @@ msgid "If it's selected, the animation plays only on the frames that have the sa
 msgstr "選択した場合、同じタグを持つフレームでのみのアニメーションが再生されます。\n"
 "そうでない場合、タグを無視してすべてのフレームでのアニメーションが再生されます。"
 
-msgid "Blue-Red Mode"
-msgstr "青-赤モード"
+#. Found in the timeline, inside the onion skinning settings. If this is enabled, the past and future frames will have appear tinted.
+msgid "Color mode"
+msgstr "カラーモード"
 
 msgid "Show past frames:"
 msgstr "過去のフレームを表示:"
@@ -1386,10 +1803,10 @@ msgstr "右へ移動"
 msgid "Add Frame Tag"
 msgstr ""
 
-msgid "Link Cel"
-msgstr "セルをリンク"
+msgid "Link Cels to"
+msgstr "セルをリンクする"
 
-msgid "Unlink Cel"
+msgid "Unlink Cels"
 msgstr "セルのリンクを解除"
 
 msgid "Frame Properties"
@@ -1398,14 +1815,34 @@ msgstr "フレームのプロパティ"
 msgid "Frame properties"
 msgstr "フレームのプロパティ"
 
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, the order of the selected frames is being reversed.
+msgid "Reverse Frames"
+msgstr "フレームをリバース"
+
 msgid "Layer"
 msgstr "レイヤー"
+
+msgid "Group"
+msgstr "グループ"
 
 msgid "Layers"
 msgstr "レイヤー"
 
+#. Hint tooltip of the create new layer button, found on the left side of the timeline.
 msgid "Create a new layer"
 msgstr "新しいレイヤーを作成"
+
+#. One of the options of the create new layer button.
+msgid "Add Pixel Layer"
+msgstr "ピクセルレイヤーを追加"
+
+#. One of the options of the create new layer button.
+msgid "Add Group Layer"
+msgstr "グループレイヤーを追加"
+
+#. One of the options of the create new layer button.
+msgid "Add 3D Layer"
+msgstr "3Dレイヤーを追加"
 
 msgid "Remove current layer"
 msgstr "現在のレイヤーを削除"
@@ -1437,10 +1874,13 @@ msgstr "レイヤーのロック/ロック解除"
 msgid "Frame: %s, Layer: %s"
 msgstr "フレーム: %s, レイヤー: %s"
 
-msgid "Enable/disable cel linking\n\n"
-"Linked cels are being shared across multiple frames"
-msgstr "セルリンクを有効/無効にする\n\n"
-"リンクされたセルは複数のフレームで共有されています"
+msgid "Enable/disable automatic linking of new cels when creating new frames\n\n"
+"Linked cels share content across multiple frames"
+msgstr "新しいフレームを作成するときに、新しいセルの自動リンクを有効/無効にしま\n\n"
+"リンクされたセルは、複数のフレームでコンテンツを共有します"
+
+msgid "Expand/collapse group"
+msgstr "グループを展開/閉じる"
 
 msgid "Palette"
 msgstr "パレット"
@@ -1556,7 +1996,7 @@ msgstr "ファイルを開けませんでした。エラーコード %s"
 msgid "File failed to save. Error code %s"
 msgstr "ファイルを保存できませんでした。エラーコード %s"
 
-msgid "File exported"
+msgid "File(s) exported"
 msgstr "ファイルをエクスポートしました"
 
 msgid "New Empty Palette"
@@ -1772,17 +2212,31 @@ msgstr "自動保存の間隔:"
 msgid "minute(s)"
 msgstr "分"
 
-msgid "Create new directory for each frame tag"
-msgstr "フレームタグごとに新しいディレクトリを作成"
+#. Found in the export dialog.
+msgid "Include frame tags in the file name"
+msgstr "ファイル名にフレームタグを含める"
 
-msgid "Creates multiple files but every file is stored in different directory that corresponds to its frame tag"
-msgstr "複数のファイルを作成しますが、各ファイルはフレームタグに対応する異なるディレクトリに保存されます。"
+#. Found in the export dialog.
+msgid "Create new folder for each frame tag"
+msgstr "フレームタグごとに新しいフォルダを作成"
+
+#. Found in the export dialog, as a hint tooltip of the "Create new folder for each frame tag" button
+msgid "Creates multiple files but every file is stored in different folder that corresponds to its frame tag"
+msgstr "複数のファイルを作成しますが、各ファイルはフレームタグに対応する異なるフォルダに保存されます。"
+
+#. Found in the export dialog. Refers to text characters that acts as separators between text. For example, the "_" in "name_0001".
+msgid "Separator character(s):"
+msgstr "区切り文字:"
+
+#. Found in the export dialog, as a hint tooltip of the separator character(s) text field.
+msgid "The character(s) that separate the file name and the frame number"
+msgstr "ファイル名とフレーム番号を区切る文字"
 
 msgid "Close"
 msgstr "閉じる"
 
-msgid "Delete"
-msgstr "削除"
+msgid "Discard All"
+msgstr "すべて破棄"
 
 msgid "Autosaved project(s) from a crashed session were found.\n"
 "Do you want to recover the data?"
@@ -1804,9 +2258,6 @@ msgstr "これ以上のパレットは削除できません！"
 msgid "Cannot remove the palette, because it doesn't exist!"
 msgstr "パレットが存在しないため、削除できません！"
 
-msgid "An error occured while removing the palette! Error code: %s"
-msgstr "パレットの削除中にエラーが発生しました！エラーコード: %s"
-
 msgid "and"
 msgstr "と"
 
@@ -1818,6 +2269,9 @@ msgstr "選択したフレームを右に移動します。"
 
 msgid "Frame duration"
 msgstr "フレームの長さ"
+
+msgid "Duration"
+msgstr "持続時間"
 
 msgid "Tiled In Both Axis"
 msgstr "両方の軸にタイルされています"
@@ -1863,4 +2317,333 @@ msgstr "パレットサイズを小さくすると、色の位置がリセット
 
 msgid "Position:"
 msgstr "ポジション:"
+
+msgid "Tools"
+msgstr "ツール"
+
+msgid "Main Canvas"
+msgstr "メインキャンバス"
+
+msgid "Second Canvas"
+msgstr "セカンドキャンバス"
+
+msgid "Animation Timeline"
+msgstr "アニメーションタイムライン"
+
+msgid "Canvas Preview"
+msgstr "キャンバスプレビュー"
+
+msgid "Color Pickers"
+msgstr "色選択"
+
+msgid "Global Tool Options"
+msgstr "グローバルツールオプション"
+
+msgid "Left Tool Options"
+msgstr "左ツールオプション"
+
+msgid "Right Tool Options"
+msgstr "右ツールオプション"
+
+msgid "Reference Images"
+msgstr "参照画像"
+
+msgid "Perspective Editor"
+msgstr "透視投影エディター"
+
+#. A UI panel. It is used to record the software in order to show the progress of art, usually in form of time lapses.
+msgid "Recorder"
+msgstr "レコーダー"
+
+msgid "Crop"
+msgstr "切り取り"
+
+msgid "Resize the canvas"
+msgstr "キャンバスのサイズを変更"
+
+msgid "Margins"
+msgstr "マージン"
+
+msgid "Position + Size"
+msgstr "位置 + サイズ"
+
+msgid "Locked Aspect Ratio"
+msgstr "ロックされたアスペクト比"
+
+msgid "Margins:"
+msgstr "マージン:"
+
+msgid "Aspect Ratio:"
+msgstr "アスペクト比:"
+
+msgid "Top:"
+msgstr "上:"
+
+msgid "Bottom:"
+msgstr "下:"
+
+msgid "Left:"
+msgstr "左:"
+
+msgid "Right:"
+msgstr "右:"
+
+msgid "Locked size\n\n"
+"When enabled using the tool on the canvas will only move the cropping rectangle.\n\n"
+"When disabled using the tool on the canvas will draw the rectangle."
+msgstr "ロックされたサイズ\n\n"
+"有効な場合、キャンバス上でツールを使用すると、切り抜き範囲の矩形が移動します。\n\n"
+"無効の場合、キャンバス上でツールを使用すると、長方形が描画されます。"
+
+#. A tool used in 3D layers, that edits 3D objects.
+msgid "3D Shape Edit"
+msgstr "3D形状編集"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Box"
+msgstr "四角形"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Sphere"
+msgstr "球体"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Capsule"
+msgstr "カプセル"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Cylinder"
+msgstr "円柱"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Prism"
+msgstr "多角柱"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Torus"
+msgstr "円環"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Plane"
+msgstr "面"
+
+msgid "Text"
+msgstr "テキスト"
+
+#. Used in 3D layers. A type of light.
+msgid "Directional light"
+msgstr "方向ライト"
+
+#. Used in 3D layers. A type of light.
+msgid "Spotlight"
+msgstr "スポットライト"
+
+#. Used in 3D layers. A type of light.
+msgid "Point light"
+msgstr "ポイントライト"
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Custom model"
+msgstr "カスタムモデル"
+
+msgid "Selected object:"
+msgstr "選択したオブジェクト"
+
+msgid "Add new object"
+msgstr "新しいオブジェクトを追加"
+
+msgid "Remove object"
+msgstr "オブジェクトを削除"
+
+msgid "Camera"
+msgstr "カメラ"
+
+#. Found in the tool options of the 3D Shape Edit tool. Refers to camera projection mode.
+msgid "Projection:"
+msgstr "投影:"
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Perspective"
+msgstr "透視投影"
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Orthogonal"
+msgstr "正投影"
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Frustum"
+msgstr "視錐台"
+
+msgid "Rotation:"
+msgstr "回転:"
+
+msgid "Scale:"
+msgstr "スケール:"
+
+#. Found in the tool options of the 3D Shape Edit tool.
+msgid "Environment"
+msgstr "環境"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
+msgid "Ambient color:"
+msgstr "環境色:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
+msgid "Ambient color energy:"
+msgstr "環境色エネルギー:"
+
+#. An option that toggles the visibility of something on or off. Found in the format of "Visible: on/off"
+msgid "Visible:"
+msgstr "可視:"
+
+#. Refers to the transformation options of an object, such as its position, rotation and scale. For technical details, see https://docs.godotengine.org/en/stable/tutorials/math/matrices_and_transforms.html
+msgid "Transform"
+msgstr "変形:"
+
+#. Found in the tool options of the 3D Shape Edit tool. A category with mesh-related options.
+msgid "Mesh"
+msgstr "メッシュ"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Prism is selected. Refers to the displacement of the upper edge along the X axis.
+msgid "Left to right:"
+msgstr "左から右:"
+
+#. Radius of a circle/spherical object.
+msgid "Radius:"
+msgstr "半径:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected.
+msgid "Radial segments:"
+msgstr "ラジアルセグメント:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected. Refers to the number of segments along the height of the sphere.
+msgid "Rings:"
+msgstr "リング:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Sphere is selected. If true, a hemisphere is created rather than a full sphere.
+msgid "Is hemisphere:"
+msgstr "半球:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
+msgid "Top radius:"
+msgstr "上部半径:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
+msgid "Bottom radius:"
+msgstr "下部半径:"
+
+msgid "Text:"
+msgstr "テキスト:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Refers to the size of one pixel's width on the text to scale it in 3D.
+msgid "Pixel size:"
+msgstr "ピクセルサイズ:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Step (in pixels) used to approximate Bézier curves.
+msgid "Curve step:"
+msgstr "カーブステップ:"
+
+msgid "Horizontal alignment:"
+msgstr "水平方向:"
+
+msgid "Left"
+msgstr "左"
+
+msgid "Right"
+msgstr "右"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. Refers to the energy of the light. The more energy, the brighter it shines.
+msgid "Energy:"
+msgstr "エネルギー:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. If true, the light's effect is reversed, darkening areas and casting bright shadows.
+msgid "Negative:"
+msgstr "ネガティブ:"
+
+msgid "Shadow:"
+msgstr "影:"
+
+#. Refers to the range of something, like the range of a spotlight.
+msgid "Range:"
+msgstr "範囲:"
+
+#. Found under certain image effects that support properties that can be animated.
+msgid "Animatable Properties"
+msgstr "アニメーション可能プロパティ"
+
+#. Found under certain image effects that support properties that can be animated. Refers to the frame that is currently being previewed.
+msgid "Preview frame:"
+msgstr "前のフレーム:"
+
+#. Found under certain image effects that support properties that can be animated. It is a checkbox that toggles whether a property should be animated or not.
+msgid "Animate"
+msgstr "アニメート"
+
+#. Found under certain image effects that support properties that can be animated. Refers to the initial value of the property.
+msgid "Initial value:"
+msgstr "初期値:"
+
+#. Found under certain image effects that support properties that can be animated. Refers to the final value of the property.
+msgid "Final value:"
+msgstr "最終値"
+
+#. Found under certain image effects that support properties that can be animated. Refers to the easing function that should be used to animate the property. https://easings.net/
+msgid "Ease type:"
+msgstr "イースタイプ:"
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Starts slowly and speeds up towards the end"
+msgstr "ゆっくり開始し、終わりに向かってスピードアップします"
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Starts quickly and slows down towards the end"
+msgstr "素早く開始し、終わりに向かってスローダウンします"
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Slowest at both ends, fast at middle"
+msgstr "両端で最も遅く、中央で速く"
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Fast at both ends, slow at middle"
+msgstr "両端で最も速く、中央で遅く"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quadratic (power of 2)"
+msgstr "二次(2乗)"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Cubic (power of 3)"
+msgstr "三次(3乗)"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quartic (power of 4)"
+msgstr "四次(4乗)"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quintic (power of 5)"
+msgstr "五次(5乗)"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Exponential (power of x)"
+msgstr "指数関数(xの出力)"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Square root"
+msgstr "平方根"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Sine"
+msgstr "サイン"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Wiggling around the edges"
+msgstr "エッジの周りをウィグリング"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Bouncing at the end"
+msgstr "終了時にバウンス"
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Backing out at ends"
+msgstr "終了時にバックアウト"
 

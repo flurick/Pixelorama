@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
-"PO-Revision-Date: 2022-01-05 15:16\n"
+"PO-Revision-Date: 2023-07-04 11:08\n"
 
 msgid "OK"
 msgstr "OK"
@@ -66,6 +66,9 @@ msgstr "Выделить"
 msgid "View"
 msgstr "Просмотр"
 
+msgid "Window"
+msgstr "Окно"
+
 msgid "Image"
 msgstr "Изображение"
 
@@ -99,6 +102,9 @@ msgstr "Импортировать"
 msgid "Export"
 msgstr "Экспорт"
 
+msgid "Overwrite"
+msgstr "Перезаписать"
+
 msgid "Export..."
 msgstr "Экспортировать..."
 
@@ -129,6 +135,9 @@ msgstr "Вырезать"
 msgid "Paste"
 msgstr "Вставить"
 
+msgid "Paste in Place"
+msgstr "Вставить на место"
+
 msgid "Delete"
 msgstr "Удалить"
 
@@ -150,11 +159,36 @@ msgstr "Обрезать изображение"
 msgid "Resize Canvas"
 msgstr "Изменить размер холста"
 
+msgid "Offset Image"
+msgstr ""
+
+msgid "Offset:"
+msgstr ""
+
+#. Found in the Offset Image dialog. It's a checkbox that, if enabled, wraps around the image if pixels go out of canvas bounds.
+msgid "Wrap around:"
+msgstr ""
+
 msgid "Centralize Image"
 msgstr "Централизовать изображение"
 
 msgid "Rotate Image"
 msgstr "Повернуть изображение"
+
+msgid "Pivot x:"
+msgstr "X центра:"
+
+msgid "Pivot y:"
+msgstr "Y центра:"
+
+msgid "Smear options:"
+msgstr "Настройки мазка:"
+
+msgid "Tolerance:"
+msgstr "Допустимое отклонение:"
+
+msgid "Initial angle:"
+msgstr "Начальный угол:"
 
 msgid "Clear"
 msgstr "Очистить"
@@ -162,8 +196,11 @@ msgstr "Очистить"
 msgid "Invert"
 msgstr "Инвертировать"
 
-msgid "Flip"
-msgstr "Перевернуть"
+msgid "Grayscale View"
+msgstr "Вид в оттенках серого"
+
+msgid "Mirror Image"
+msgstr "Отраженное изображение"
 
 msgid "Flip Horizontal"
 msgstr "Отразить по горизонтали"
@@ -177,11 +214,77 @@ msgstr "Настройки"
 msgid "Tile Mode"
 msgstr "Бесшовный режим"
 
+msgid "Tile Mode Offsets"
+msgstr "Сдвиг в бесшовном режиме"
+
+msgid "X-basis x:"
+msgstr "X для X-базиса:"
+
+msgid "X-basis y:"
+msgstr "Y для X-базиса:"
+
+msgid "Y-basis x:"
+msgstr "X для Y-базиса:"
+
+msgid "Y-basis y:"
+msgstr "Y для Y-базиса:"
+
+msgid "Tile Mask"
+msgstr "Тайловая маска"
+
+msgid "Reset"
+msgstr "Сброс"
+
+msgid "Use Current Frame"
+msgstr "Использовать текущий кадр"
+
+msgid "Reset Mask"
+msgstr "Сбросить маску"
+
 msgid "Window Opacity"
 msgstr "Непрозрачность окна"
 
+msgid "Window opacity does not work on fullscreen mode."
+msgstr "Прозрачность окна не работает в полноэкранном режиме."
+
 msgid "Panel Layout"
 msgstr "Расположение панелей"
+
+msgid "Panels"
+msgstr "Панели"
+
+msgid "Layouts"
+msgstr "Слои"
+
+msgid "Moveable Panels"
+msgstr "Перемещаемые панели"
+
+msgid "Manage Layouts"
+msgstr "Управление слоями"
+
+#. Noun, a preview of something
+msgid "Preview"
+msgstr "Предпросмотр"
+
+#. Found in the manage layouts dialog
+msgid "This is a preview, changing this won't change the layout"
+msgstr "Это предварительный просмотр, изменение не изменит макет"
+
+#. Found in the manage layouts dialog
+msgid "Double click to set as new startup layout"
+msgstr ""
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Add Layout"
+msgstr "Добавить компоновку"
+
+msgid "Edit Layout"
+msgstr "Редактировать компоновку"
+
+msgid "Are you sure you want to delete this layout?"
+msgstr "Вы уверены, что хотите удалить эту компоновку?"
 
 msgid "Auto"
 msgstr "Автоматически"
@@ -207,6 +310,26 @@ msgstr "Показывать линейки"
 msgid "Show Guides"
 msgstr "Показывать направляющие"
 
+#. Found under the View menu.
+msgid "Show Mouse Guides"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap To"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap to Rectangular Grid"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap to Guides"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap to Perspective Guides"
+msgstr ""
+
 msgid "Show Animation Timeline"
 msgstr "Показать таймлайн анимации"
 
@@ -231,14 +354,17 @@ msgstr "Настройки импорта"
 msgid "Import as:"
 msgstr "Импортировать как:"
 
+msgid "Apply to all"
+msgstr "Применить ко всем"
+
 msgid "Recent projects"
 msgstr "Недавние проекты"
 
-msgid "New tab"
-msgstr "Новая вкладка"
+msgid "New project"
+msgstr "Новый проект"
 
-msgid "Spritesheet (new tab)"
-msgstr "Таблица спрайтов (новая вкладка)"
+msgid "Spritesheet (new project)"
+msgstr "Таблица спрайтов (новый проект)"
 
 msgid "Spritesheet (new layer)"
 msgstr "Таблица спрайтов (новый слой)"
@@ -246,11 +372,14 @@ msgstr "Таблица спрайтов (новый слой)"
 msgid "New frame"
 msgstr "Новый кадр"
 
-msgid "Replace frame"
-msgstr "Заменить кадр"
+msgid "Replace cel"
+msgstr "Заменить ячейку"
 
 msgid "New layer"
 msgstr "Новый слой"
+
+msgid "New reference image"
+msgstr "Новое эталонное изображение"
 
 msgid "New palette"
 msgstr "Новая палитра"
@@ -269,6 +398,9 @@ msgstr "Кадров по вертикали:"
 
 msgid "Start frame:"
 msgstr "Начальный кадр:"
+
+msgid "End frame:"
+msgstr ""
 
 msgid "At frame:"
 msgstr "В кадре:"
@@ -300,19 +432,35 @@ msgstr "Экспортировать спрайт"
 msgid "File Exists, Overwrite?"
 msgstr "Файл существует, перезаписать?"
 
-msgid "File %s already exists. Overwrite?"
-msgstr "Файл %s уже существует. Перезаписать?"
+msgid "The following files already exist. Do you wish to overwrite them?\n"
+"%s"
+msgstr "Указанные ниже файлы уже существуют. Перезаписать их?\n"
+"%s"
 
-msgid "Directory path or file name is not valid!"
+msgid "Directory path is not valid!"
+msgstr "Недопустимый путь к каталогу!"
+
+msgid "File name is not valid!"
+msgstr "Неправильное имя файла!"
+
+msgid "Directory path and file name are not valid!"
 msgstr "Недопустимый путь к папке или имя файла!"
 
 msgid "Exporting in progress..."
 msgstr "Выполняется экспорт..."
 
+msgid "Can't load file '%s'."
+msgstr "Не удается загрузить файл '%s'."
+
 msgid "Can't load file '%s'.\n"
 "Error code: %s"
 msgstr "Не удалось загрузить файл '%s'.\n"
 "Код ошибки: %s"
+
+msgid "Can't load file '%s'.\n"
+"This is not a valid palette file."
+msgstr "Невозможно загрузить файл '%s'.\n"
+"Не допустимый файл палитры."
 
 msgid "Frame"
 msgstr "Кадр"
@@ -356,14 +504,35 @@ msgstr "Выбрать текущую папку"
 msgid "Open a Directory"
 msgstr "Открыть папку"
 
-msgid "All frames as multiple files"
-msgstr "Все кадры как несколько файлов"
-
-msgid "All frames as a single file animation"
-msgstr "Все кадры как один файл анимации"
-
 msgid "Background:"
 msgstr "Фон:"
+
+#. Found in the export dialog
+msgid "Selected frames"
+msgstr "Выбранные кадры"
+
+msgid "Layers:"
+msgstr "Слои:"
+
+#. Found in the export dialog
+msgid "Visible layers"
+msgstr "Видимые слои"
+
+#. Found in the export dialog
+msgid "Selected layers"
+msgstr "Выбранные слои"
+
+#. A type of layer. A pixel layer is the most common type of layer, which stores image data in pixels.
+msgid "Pixel layer:"
+msgstr "Слой пикселей:"
+
+#. A type of layer. A group layer stores other layers as its children, similar to how a folder holds files.
+msgid "Group layer:"
+msgstr "Групповой слой:"
+
+#. A type of layer. A 3D layer contains data of 3D objects that are rasterized automatically by Pixelorama.
+msgid "3D layer:"
+msgstr ""
 
 msgid "Direction:"
 msgstr "Направление:"
@@ -389,6 +558,10 @@ msgstr "Строки"
 msgid "Rows:"
 msgstr "Строки:"
 
+#. Found in the export dialog. It is a label that says the dimensions (widthxheight) of the exported image(s).
+msgid "Export dimensions:"
+msgstr "Размер для экспорта:"
+
 msgid "Path:"
 msgstr "Путь:"
 
@@ -400,6 +573,10 @@ msgstr "Создать папку"
 
 msgid "File:"
 msgstr "Файл:"
+
+#. Found in the export dialog. It is a button that when pressed, shows more options.
+msgid "Advanced options"
+msgstr "Расширенные опции"
 
 msgid "Interpolation:"
 msgstr "Интерполяция:"
@@ -415,6 +592,9 @@ msgstr "Кубический"
 
 msgid "Trilinear"
 msgstr "Трилинейный"
+
+msgid "Constant"
+msgstr "Константа"
 
 msgid "General"
 msgstr "Общие"
@@ -434,6 +614,10 @@ msgstr "Темы оформления"
 msgid "Canvas"
 msgstr "Холст"
 
+#. Refers to the animation timeline.
+msgid "Timeline"
+msgstr ""
+
 msgid "Selection"
 msgstr "Выделение"
 
@@ -446,8 +630,22 @@ msgstr "Резервная копия"
 msgid "Performance"
 msgstr "Производительность"
 
+#. Found in the preferences. Refers to device drivers, such as video drivers and tablet drivers.
+msgid "Drivers"
+msgstr "Драйверы"
+
+msgid "Extensions"
+msgstr "Расширения"
+
+msgid "Cursors"
+msgstr "Курсоры"
+
 msgid "Indicators"
 msgstr "Индикатор"
+
+#. Found in the preferences. Used for options that require restart when they are changed.
+msgid "Pixelorama must be restarted for changes to take effect."
+msgstr "Следует перезапустить Pixeloram’у, чтобы применить изменения."
 
 msgid "On"
 msgstr "Вкл"
@@ -479,8 +677,8 @@ msgstr "Цвет направляющих:"
 msgid "System Language"
 msgstr "Системный язык"
 
-msgid "Display Scale"
-msgstr "Масштаб экрана"
+msgid "Display scale:"
+msgstr ""
 
 msgid "Dim interface on dialog popup"
 msgstr "Затемнять интерфейс при появлении диалога"
@@ -506,11 +704,29 @@ msgstr "Фиолетовый"
 msgid "Theme"
 msgstr "Тема"
 
+msgid "Buttons"
+msgstr "Кнопки"
+
 msgid "Icon color from:"
 msgstr "Цвет значка из:"
 
 msgid "Icon color:"
 msgstr "Цвет значка:"
+
+msgid "Background"
+msgstr "Фон"
+
+msgid "Background color from:"
+msgstr "Цвет фона из:"
+
+msgid "Background color:"
+msgstr "Цвет фона:"
+
+msgid "Left tool color:"
+msgstr "Цвет левого инструмента:"
+
+msgid "Right tool color:"
+msgstr "Цвет правого инструмента:"
 
 msgid "Tool button size:"
 msgstr "Размер кнопок инструментов:"
@@ -560,11 +776,73 @@ msgstr "Обесцвечивание"
 msgid "Outline"
 msgstr "Обводка"
 
+msgid "Drop Shadow"
+msgstr "Отбросить тень"
+
+msgid "Offset X:"
+msgstr "Смещение по X:"
+
+msgid "Offset Y:"
+msgstr "Смещение по Y:"
+
+msgid "Shadow color:"
+msgstr "Цвет тени:"
+
 msgid "Adjust Hue/Saturation/Value"
 msgstr "Изменить Оттенок/Насыщенность/Яркость"
 
 msgid "Gradient"
 msgstr "Градиент"
+
+msgid "Gradient Map"
+msgstr "Карта градиента"
+
+msgid "Divide into equal parts"
+msgstr "Разделить на равные части"
+
+msgid "Parts:"
+msgstr "Части:"
+
+msgid "Add point at the end"
+msgstr "Добавить точку в конце"
+
+msgid "If this is enabled, the last point gets added at the end of the gradient.\n"
+"Disable this if you wish to convert the gradient to have constant interpolation, so that the last color will be taken into account."
+msgstr "Если включено, последняя точка добавляется в конце градиента. Отключите, если вы хотите, чтобы у градиента была константная интерполяция, чтобы учитывался последний цвет."
+
+msgid "Shape:"
+msgstr "Форма:"
+
+msgid "Linear"
+msgstr "Линейный"
+
+msgid "Radial"
+msgstr "Радиальный"
+
+#. Found in the Gradient dialog, under the image menu. Specifies if the gradient will repeat or not.
+msgid "Repeat:"
+msgstr "Повтор:"
+
+#. Found in the Gradient dialog, under the image menu. Specifies if the gradient will repeat or not.
+msgid "Repeat"
+msgstr "Повтор"
+
+#. Found in the Gradient dialog, under the image menu. It is one of the repeat options.
+msgid "Mirror"
+msgstr "Отражение"
+
+#. Found in the Gradient dialog, under the image menu. It is one of the repeat options. If Truncate is selected, the gradient gets cut at the edges.
+msgid "Truncate"
+msgstr "Усечение"
+
+msgid "Transition size:"
+msgstr "Размер перехода:"
+
+msgid "Center:"
+msgstr "Центр:"
+
+msgid "Dithering pattern:"
+msgstr "Шаблон псевдосмешивания:"
 
 msgid "Adjust HSV"
 msgstr "Настройка цвета"
@@ -602,17 +880,17 @@ msgstr "Цвета:"
 msgid "Steps:"
 msgstr "Шаги:"
 
-msgid "Top to Bottom"
-msgstr "Сверху вниз"
+#. An image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
+msgid "Posterize"
+msgstr ""
 
-msgid "Bottom to Top"
-msgstr "Снизу вверх"
+#. An option for the posterize image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
+msgid "Posterize levels:"
+msgstr ""
 
-msgid "Left to Right"
-msgstr "Слева направо"
-
-msgid "Right to Left"
-msgstr "Справа налево"
+#. An option for the posterize image effect.
+msgid "Dither intensity:"
+msgstr ""
 
 msgid "View Splash Screen"
 msgstr "Экран приветствия"
@@ -740,6 +1018,21 @@ msgstr "Японский"
 msgid "Ukrainian"
 msgstr "Украинский"
 
+msgid "Danish"
+msgstr "Датский"
+
+msgid "Swedish"
+msgstr "Шведский"
+
+msgid "Serbian (Cyrillic)"
+msgstr "Сербский (кириллица)"
+
+msgid "Dutch"
+msgstr "Голландский"
+
+msgid "Belarusian"
+msgstr "Белорусский"
+
 msgid "Development Team"
 msgstr "Команда разработчиков"
 
@@ -799,14 +1092,14 @@ msgstr "Эллиптическое выделение\n\n"
 "%s левой кнопкой мыши\n"
 "%s для правой кнопки мыши"
 
-msgid "Polygonal Selection\n"
-"Double-click to connect the last point to the starting point\n\n"
+msgid "Polygonal Selection\n\n"
 "%s for left mouse button\n"
-"%s for right mouse button"
-msgstr "Многоугольное выделение\n"
-"Дважды щёлкните по последней точке, чтобы соединить её с начальной\n\n"
-"%s левой кнопкой мыши\n"
-"%s для правой кнопки мыши"
+"%s for right mouse button\n\n"
+"Double-click to connect the last point to the starting point"
+msgstr "Многоугольное выделение\n\n"
+"%s для левой кнопки мыши\n"
+"%s для правой кнопкой мыши\n\n"
+"Двойной клик для соединения последней точки с первой"
 
 msgid "Select By Color\n\n"
 "%s for left mouse button\n"
@@ -850,14 +1143,14 @@ msgstr "Сдвиг\n\n"
 "%s левой кнопкой мыши\n"
 "%s для правой кнопки мыши"
 
-msgid "Color Picker\n"
-"Select a color from a pixel of the sprite\n\n"
+msgid "Color Picker\n\n"
 "%s for left mouse button\n"
-"%s for right mouse button"
-msgstr "Выбор цвета\n"
-"Выбрать цвет из пикселя спрайта\n\n"
+"%s for right mouse button\n\n"
+"Select a color from a pixel of the sprite"
+msgstr "Пипетка\n\n"
 "%s для левой кнопки мыши\n"
-"%s для правой кнопки мыши"
+"%s для правой кнопки мыши\n\n"
+"Выбирает цвет из пикселя спрайта"
 
 msgid "Pencil\n\n"
 "%s for left mouse button\n"
@@ -980,6 +1273,12 @@ msgstr "Показать правый значок инструмента"
 msgid "Displays an icon of the selected right tool next to the cursor on the canvas"
 msgstr "Отображает значок выбранного правого инструмента рядом с курсором на холсте"
 
+msgid "Use native mouse cursors"
+msgstr "Использовать нативные курсоры мыши"
+
+msgid "Use cross cursor for the canvas"
+msgstr "Использовать курсор перекрестия для холста"
+
 msgid "Guides"
 msgstr "Направляющие"
 
@@ -988,6 +1287,18 @@ msgstr "Цвет направляющих:"
 
 msgid "A color of ruler guides displayed on the canvas"
 msgstr "Цвет направляющих линейки, отображаемых на холсте"
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping.
+msgid "Snapping"
+msgstr ""
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping.
+msgid "Snapping distance:"
+msgstr ""
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping. Hint tooltip of the snapping distance slider.
+msgid "This is the distance in pixels where guide and grid snapping gets activated."
+msgstr ""
 
 msgid "Grid"
 msgstr "Сетка"
@@ -1007,41 +1318,21 @@ msgstr "Изометрическая"
 msgid "All"
 msgstr "Обе"
 
-msgid "Rectangular grid width:"
-msgstr "Ширина прямоугольной сетки:"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Rectangular grid size:"
+msgstr ""
 
-msgid "Sets how far apart are vertical lines of the rectangular grid"
-msgstr "Устанавливает расстояние между вертикальными линиями прямоугольной сетки"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Isometric grid size:"
+msgstr ""
 
-msgid "Rectangular grid height:"
-msgstr "Высота прямоугольной сетки:"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Grid offset:"
+msgstr ""
 
-msgid "Sets how far apart are horizontal lines of the rectangular grid"
-msgstr "Устанавливает расстояние между горизонтальными линиями сетки"
-
-msgid "Isometric cell bounds width:"
-msgstr "Ширина границ изометрической клетки:"
-
-msgid "Sets the width of the isometric cell's axis aligned bounding box"
-msgstr "Устанавливает ширину границ, в которые вписывается изометрическая клетка"
-
-msgid "Isometric cell bounds height:"
-msgstr "Высота границ изометрической клетки:"
-
-msgid "Sets the height of the isometric cell's axis aligned bounding box"
-msgstr "Устанавливает высоту границ, в которые вписывается изометрическая клетка"
-
-msgid "Grid offset x:"
-msgstr "Сдвиг сетки по X:"
-
-msgid "Sets grid's x offset from the canvas origin (top left corner of the image)"
-msgstr "Устанавливает смещение сетки по X от начала координат холста (верхнего левого угла изображения)"
-
-msgid "Grid offset y:"
-msgstr "Сдвиг сетки по Y:"
-
-msgid "Sets grid's y offset from the canvas origin (top left corner of the image)"
-msgstr "Устанавливает смещение сетки по Y от начала координат холста (верхнего левого угла изображения)"
+#. Found in the Preferences, in the Canvas tab. Hint tooltip of the grid offset value sliders.
+msgid "Sets grid's offset from the canvas origin (top left corner of the image)"
+msgstr ""
 
 msgid "Draw over Tile Mode:"
 msgstr "Показывать в бесшовном режиме:"
@@ -1103,6 +1394,18 @@ msgstr "Следовать масштабу холста"
 msgid "The transparent checker follow the zoom level of canvas"
 msgstr "Клеточки прозрачности следуют увеличению/уменьшению холста"
 
+#. Found in the Preferences, under Timeline. If this is enabled, clicking on the layer buttons (such as lock, invisible etc) will automatically select that layer.
+msgid "Select layer when clicking on one of its buttons:"
+msgstr ""
+
+#. Found in the Preferences, under Timeline. Changes the color of the past (previous) frames in onion skinning, if color mode is enabled.
+msgid "Onion skinning past color:"
+msgstr ""
+
+#. Found in the Preferences, under Timeline. Changes the color of the past (previous) frames in onion skinning, if color mode is enabled.
+msgid "Onion skinning future color:"
+msgstr ""
+
 msgid "Animated selection borders"
 msgstr "Анимированные границы выделения"
 
@@ -1127,6 +1430,73 @@ msgstr "Устанавливает лимит на количество кадр
 msgid "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
 msgstr "Если этот параметр включен, то, когда окно приложения теряет фокус, оно приостанавливается. Это помогает снизить загрузку процессора в режиме бездействие. Приложение продолжит работать, когда мышь попадет в окно приложения."
 
+#. Found in the Preferences, under Drivers. Specifies the renderer/video driver being used.
+msgid "Renderer:"
+msgstr "Обработчик:"
+
+#. Found in the Preferences, under Drivers. Hint tooltip of the renderer option.
+msgid "Specifies the renderer/video driver being used. GLES2 is better for older and low-end devices, but GLES3 may offer more features."
+msgstr "Указыает, какой используется обработчик/видеодрайвер. GLES2 лучше для старых и маломощных устройств, а у GLES3 больше возможностей."
+
+#. Found in the Preferences, under Drivers. Specifies the tablet driver being used on Windows.
+msgid "Tablet driver:"
+msgstr "Драйвер планшета:"
+
+#. Found in the Preferences, under Drivers. Hint tooltip of the tablet driver option.
+msgid "Specifies the tablet driver being used on Windows. If you have Windows Ink enabled, select winink."
+msgstr "В Windows указывает, какой будет использоваться драйвер планшета. Если включён Windows Ink, выберите winink."
+
+msgid "Add Extension"
+msgstr "Добавить расширение"
+
+msgid "Enable"
+msgstr "Включить"
+
+msgid "Disable"
+msgstr "Отключить"
+
+msgid "Uninstall"
+msgstr "Удалить"
+
+msgid "Open Folder"
+msgstr "Открыть папку"
+
+#. Hint tooltip of a button in the Global Tool Settings. "Dynamics" let users affect certain brush parameters, such as their size and alpha, based on the pressure of the tablet pen, the velocity of the mouse or the pen, and more in the future.
+msgid "Dynamics"
+msgstr ""
+
+#. Found in the Dynamics options menu. Pressure refers to tablet pen pressure.
+msgid "Pressure"
+msgstr ""
+
+#. Found in the Dynamics options menu. Velocity refers to mouse or tablet pen velocity, meaning how fast it moves.
+msgid "Velocity"
+msgstr ""
+
+#. Refers to the alpha channel of the colors, in the RGBA color model. The alpha channel is responsible for the transparency of the color.
+msgid "Alpha"
+msgstr "Прозрачность"
+
+#. Refers to the size of a value, for example the size of a brush.
+msgid "Size"
+msgstr "Размер"
+
+#. Found in the Dynamics options menu. Sets the limits of the brush property values, such as the minimum and maximum values of alpha and size.
+msgid "Value limits"
+msgstr ""
+
+#. Found in the Dynamics options menu. Sets the thresholds of the dynamic properties, such as the minimum and maximum values of pressure and velocity.
+msgid "Thresholds"
+msgstr ""
+
+#. Noun, the start of something.
+msgid "Start"
+msgstr ""
+
+#. Noun, the end of something.
+msgid "End"
+msgstr ""
+
 msgid "Brush:"
 msgstr "Кисть:"
 
@@ -1148,8 +1518,8 @@ msgstr "Своя кисть"
 msgid "Brush size:"
 msgstr "Размер кисти:"
 
-msgid "Overwrite Color"
-msgstr "Заменить цвет"
+msgid "Overwrite color"
+msgstr ""
 
 msgid "Overwrites color instead of blending it. This option is only relevant with colors that are not fully opaque"
 msgstr "Перезаписывает цвет вместо смешивания. Этот параметр применим только к цветам, которые не являются полностью непрозрачными"
@@ -1160,8 +1530,22 @@ msgstr "Пиксельная точность"
 msgid "Fill inside"
 msgstr "Залить внутри"
 
-msgid "Makes lines smooth by removing the extra pixels on the edges"
-msgstr "Делает линии плавными, удаляя лишние пиксели на краях"
+#. Found in the tool options of the Pencil tool, and refers to the spacing between brush strokes.
+msgid "Spacing"
+msgstr ""
+
+#. Found in the tool options of the Pencil tool if "Spacing" is enabled, and refers to the horizontal gap between brush strokes.
+msgid "Gap X:"
+msgstr ""
+
+#. Found in the tool options of the Pencil tool if "Spacing" is enabled, and refers to the vertical gap between brush strokes.
+msgid "Gap Y:"
+msgstr ""
+
+msgid "Pixel Perfect\n"
+"Makes lines smooth by removing the extra pixels on the edges"
+msgstr "\"С точностью до пикселя\"\n"
+"Делает линии плавными, удаляя лишние пиксели по краям"
 
 msgid "Fill Shape"
 msgstr "Заполнить фигуру"
@@ -1175,21 +1559,30 @@ msgstr "Цвет кисти из"
 msgid "0: Color from the brush itself, 100: the currently selected color"
 msgstr "0: Собственный цвет кисти, 100: Выбранный цвет"
 
+#. Found in the bucket tool options.
 msgid "Fill area:"
-msgstr "Залить область:"
+msgstr "Область заливки:"
 
-msgid "Same color area"
-msgstr "Область того же цвета"
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Similar area"
+msgstr "Похожая область"
 
-msgid "Same color pixels"
-msgstr "Пиксели того же цвета"
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Similar colors"
+msgstr "Похожие цвета"
+
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Whole selection"
+msgstr "Всё выделение"
 
 msgid "Fill with:"
 msgstr "Заполнить:"
 
-msgid "Selected Color"
-msgstr "Выбранным цветом"
+#. Found in the bucket tool options, one of the fill with options.
+msgid "Selected color"
+msgstr "Выбранный цвет"
 
+#. Found in the bucket tool options, one of the fill with options.
 msgid "Pattern"
 msgstr "Узором"
 
@@ -1241,6 +1634,22 @@ msgstr "По размеру кадра"
 msgid "100% Zoom"
 msgstr "100% масштаб"
 
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Replace selection"
+msgstr ""
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Add to selection"
+msgstr ""
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Subtract from selection"
+msgstr ""
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Intersection of selections"
+msgstr ""
+
 msgid "Mirroring"
 msgstr "Зеркало"
 
@@ -1258,6 +1667,12 @@ msgstr "Вертикально"
 
 msgid "Current frame:"
 msgstr "Текущий кадр:"
+
+msgid "Animation mode:"
+msgstr ""
+
+msgid "Current frame as spritesheet"
+msgstr ""
 
 msgid "Jump to the first frame\n"
 "(%s)"
@@ -1350,8 +1765,9 @@ msgid "If it's selected, the animation plays only on the frames that have the sa
 msgstr "Если этот параметр включён, при анимации будут проигрываться только кадры с той же меткой.\n"
 "Если выключен, анимация будет включать все кадры, независимо от меток."
 
-msgid "Blue-Red Mode"
-msgstr "Сине-красный режим"
+#. Found in the timeline, inside the onion skinning settings. If this is enabled, the past and future frames will have appear tinted.
+msgid "Color mode"
+msgstr ""
 
 msgid "Show past frames:"
 msgstr "Показывать прошлые кадры:"
@@ -1386,11 +1802,11 @@ msgstr "Сместить вправо"
 msgid "Add Frame Tag"
 msgstr "Добавить тег кадра"
 
-msgid "Link Cel"
-msgstr "Соединить ячейки"
+msgid "Link Cels to"
+msgstr "Привязать ячейки к"
 
-msgid "Unlink Cel"
-msgstr "Разъединить ячейки"
+msgid "Unlink Cels"
+msgstr "Отвязать ячейки"
 
 msgid "Frame Properties"
 msgstr "Свойства кадра"
@@ -1398,14 +1814,34 @@ msgstr "Свойства кадра"
 msgid "Frame properties"
 msgstr "Свойства кадра"
 
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, the order of the selected frames is being reversed.
+msgid "Reverse Frames"
+msgstr ""
+
 msgid "Layer"
 msgstr "Слой"
+
+msgid "Group"
+msgstr "Группа"
 
 msgid "Layers"
 msgstr "Слои"
 
+#. Hint tooltip of the create new layer button, found on the left side of the timeline.
 msgid "Create a new layer"
 msgstr "Создать новый слой"
+
+#. One of the options of the create new layer button.
+msgid "Add Pixel Layer"
+msgstr ""
+
+#. One of the options of the create new layer button.
+msgid "Add Group Layer"
+msgstr ""
+
+#. One of the options of the create new layer button.
+msgid "Add 3D Layer"
+msgstr ""
 
 msgid "Remove current layer"
 msgstr "Удалить текущий слой"
@@ -1437,10 +1873,13 @@ msgstr "Блокировать/разблокировать слой"
 msgid "Frame: %s, Layer: %s"
 msgstr "Кадр: %s, слой: %s"
 
-msgid "Enable/disable cel linking\n\n"
-"Linked cels are being shared across multiple frames"
-msgstr "Включить/выключить соединение ячеек\n\n"
-"Соединённые ячейки используются в нескольких кадрах"
+msgid "Enable/disable automatic linking of new cels when creating new frames\n\n"
+"Linked cels share content across multiple frames"
+msgstr "Включить/отключить автоматическую привязку новых ячеек при создании новых кадров\n\n"
+"Содержание привязанных ячеей используется в нескольких кадрах"
+
+msgid "Expand/collapse group"
+msgstr "Развернуть/свернуть"
 
 msgid "Palette"
 msgstr "Палитра"
@@ -1556,8 +1995,8 @@ msgstr "Не удалось открыть файл. Код ошибки %s"
 msgid "File failed to save. Error code %s"
 msgstr "Не удалось сохранить файл. Код ошибки %s"
 
-msgid "File exported"
-msgstr "Файл экспортирован"
+msgid "File(s) exported"
+msgstr ""
 
 msgid "New Empty Palette"
 msgstr "Создать пустую палитру"
@@ -1772,17 +2211,31 @@ msgstr "Интервал автосохранения:"
 msgid "minute(s)"
 msgstr "мин."
 
-msgid "Create new directory for each frame tag"
-msgstr "Создать новый каталог для каждой метки кадра"
+#. Found in the export dialog.
+msgid "Include frame tags in the file name"
+msgstr ""
 
-msgid "Creates multiple files but every file is stored in different directory that corresponds to its frame tag"
-msgstr "Создает несколько файлов, но каждый файл хранится в разных каталогах, соответствующих метке кадра"
+#. Found in the export dialog.
+msgid "Create new folder for each frame tag"
+msgstr "Создать по папке для метки кадров"
+
+#. Found in the export dialog, as a hint tooltip of the "Create new folder for each frame tag" button
+msgid "Creates multiple files but every file is stored in different folder that corresponds to its frame tag"
+msgstr "Создаёт много файлов, но каждый файл будет в отдельной папке согласно его метке кадра"
+
+#. Found in the export dialog. Refers to text characters that acts as separators between text. For example, the "_" in "name_0001".
+msgid "Separator character(s):"
+msgstr ""
+
+#. Found in the export dialog, as a hint tooltip of the separator character(s) text field.
+msgid "The character(s) that separate the file name and the frame number"
+msgstr ""
 
 msgid "Close"
 msgstr "Закрыть"
 
-msgid "Delete"
-msgstr "Удалить"
+msgid "Discard All"
+msgstr "Отменить все"
 
 msgid "Autosaved project(s) from a crashed session were found.\n"
 "Do you want to recover the data?"
@@ -1804,9 +2257,6 @@ msgstr "Нельзя удалить больше палитр!"
 msgid "Cannot remove the palette, because it doesn't exist!"
 msgstr "Невозможно удалить палитру, потому что она не существует!"
 
-msgid "An error occured while removing the palette! Error code: %s"
-msgstr "Произошла ошибка при удалении палитры! Код ошибки: %s"
-
 msgid "and"
 msgstr "и"
 
@@ -1818,6 +2268,9 @@ msgstr "Переместить выделенный кадр вправо."
 
 msgid "Frame duration"
 msgstr "Длительность кадра"
+
+msgid "Duration"
+msgstr "Длительность"
 
 msgid "Tiled In Both Axis"
 msgstr "Повторять по обеим осям"
@@ -1863,4 +2316,331 @@ msgstr "Уменьшение размера палитры сбросит поз
 
 msgid "Position:"
 msgstr "Положение:"
+
+msgid "Tools"
+msgstr "Инструменты"
+
+msgid "Main Canvas"
+msgstr "Основной холст"
+
+msgid "Second Canvas"
+msgstr "Второй холст"
+
+msgid "Animation Timeline"
+msgstr "Временная шкала анимации"
+
+msgid "Canvas Preview"
+msgstr "Предпросмотр холста"
+
+msgid "Color Pickers"
+msgstr "Пипетки"
+
+msgid "Global Tool Options"
+msgstr "Глобальные настройки инструментов"
+
+msgid "Left Tool Options"
+msgstr "Настройки левого инструмента"
+
+msgid "Right Tool Options"
+msgstr "Настройки правого инструмента"
+
+msgid "Reference Images"
+msgstr "Эталонные изображения"
+
+msgid "Perspective Editor"
+msgstr ""
+
+#. A UI panel. It is used to record the software in order to show the progress of art, usually in form of time lapses.
+msgid "Recorder"
+msgstr ""
+
+msgid "Crop"
+msgstr ""
+
+msgid "Resize the canvas"
+msgstr "Изменить размер холста"
+
+msgid "Margins"
+msgstr ""
+
+msgid "Position + Size"
+msgstr ""
+
+msgid "Locked Aspect Ratio"
+msgstr ""
+
+msgid "Margins:"
+msgstr ""
+
+msgid "Aspect Ratio:"
+msgstr ""
+
+msgid "Top:"
+msgstr ""
+
+msgid "Bottom:"
+msgstr ""
+
+msgid "Left:"
+msgstr ""
+
+msgid "Right:"
+msgstr ""
+
+msgid "Locked size\n\n"
+"When enabled using the tool on the canvas will only move the cropping rectangle.\n\n"
+"When disabled using the tool on the canvas will draw the rectangle."
+msgstr ""
+
+#. A tool used in 3D layers, that edits 3D objects.
+msgid "3D Shape Edit"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Box"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Sphere"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Capsule"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Cylinder"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Prism"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Torus"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Plane"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+#. Used in 3D layers. A type of light.
+msgid "Directional light"
+msgstr ""
+
+#. Used in 3D layers. A type of light.
+msgid "Spotlight"
+msgstr ""
+
+#. Used in 3D layers. A type of light.
+msgid "Point light"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Custom model"
+msgstr ""
+
+msgid "Selected object:"
+msgstr ""
+
+msgid "Add new object"
+msgstr ""
+
+msgid "Remove object"
+msgstr ""
+
+msgid "Camera"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. Refers to camera projection mode.
+msgid "Projection:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Perspective"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Orthogonal"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Frustum"
+msgstr ""
+
+msgid "Rotation:"
+msgstr ""
+
+msgid "Scale:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool.
+msgid "Environment"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
+msgid "Ambient color:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
+msgid "Ambient color energy:"
+msgstr ""
+
+#. An option that toggles the visibility of something on or off. Found in the format of "Visible: on/off"
+msgid "Visible:"
+msgstr ""
+
+#. Refers to the transformation options of an object, such as its position, rotation and scale. For technical details, see https://docs.godotengine.org/en/stable/tutorials/math/matrices_and_transforms.html
+msgid "Transform"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. A category with mesh-related options.
+msgid "Mesh"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Prism is selected. Refers to the displacement of the upper edge along the X axis.
+msgid "Left to right:"
+msgstr ""
+
+#. Radius of a circle/spherical object.
+msgid "Radius:"
+msgstr "Радиус:"
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected.
+msgid "Radial segments:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected. Refers to the number of segments along the height of the sphere.
+msgid "Rings:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Sphere is selected. If true, a hemisphere is created rather than a full sphere.
+msgid "Is hemisphere:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
+msgid "Top radius:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
+msgid "Bottom radius:"
+msgstr ""
+
+msgid "Text:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Refers to the size of one pixel's width on the text to scale it in 3D.
+msgid "Pixel size:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Step (in pixels) used to approximate Bézier curves.
+msgid "Curve step:"
+msgstr ""
+
+msgid "Horizontal alignment:"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. Refers to the energy of the light. The more energy, the brighter it shines.
+msgid "Energy:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. If true, the light's effect is reversed, darkening areas and casting bright shadows.
+msgid "Negative:"
+msgstr ""
+
+msgid "Shadow:"
+msgstr ""
+
+#. Refers to the range of something, like the range of a spotlight.
+msgid "Range:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated.
+msgid "Animatable Properties"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the frame that is currently being previewed.
+msgid "Preview frame:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. It is a checkbox that toggles whether a property should be animated or not.
+msgid "Animate"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the initial value of the property.
+msgid "Initial value:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the final value of the property.
+msgid "Final value:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the easing function that should be used to animate the property. https://easings.net/
+msgid "Ease type:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Starts slowly and speeds up towards the end"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Starts quickly and slows down towards the end"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Slowest at both ends, fast at middle"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Fast at both ends, slow at middle"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quadratic (power of 2)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Cubic (power of 3)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quartic (power of 4)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quintic (power of 5)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Exponential (power of x)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Square root"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Sine"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Wiggling around the edges"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Bouncing at the end"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Backing out at ends"
+msgstr ""
 

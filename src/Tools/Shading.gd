@@ -111,13 +111,13 @@ func _init() -> void:
 func _input(event: InputEvent) -> void:
 	var options: OptionButton = $LightenDarken
 
-	if event.is_action_pressed("ctrl"):
+	if event.is_action_pressed("change_tool_mode"):
 		_prev_mode = options.selected
-	if event.is_action("ctrl"):
+	if event.is_action("change_tool_mode"):
 		options.selected = _prev_mode ^ 1
 		_mode = options.selected
 		_drawer.color_op.lighten_or_darken = _mode
-	if event.is_action_released("ctrl"):
+	if event.is_action_released("change_tool_mode"):
 		options.selected = _prev_mode
 		_mode = options.selected
 		_drawer.color_op.lighten_or_darken = _mode
@@ -188,15 +188,11 @@ func update_config() -> void:
 	.update_config()
 	$ShadingMode.selected = _shading_mode
 	$LightenDarken.selected = _mode
-	$Amount/Spinbox.value = _amount
-	$Amount/Slider.value = _amount
-	$HueShiftingOptions/AmountHue/Spinbox.value = _hue_amount
-	$HueShiftingOptions/AmountHue/Slider.value = _hue_amount
-	$HueShiftingOptions/AmountSat/Spinbox.value = _sat_amount
-	$HueShiftingOptions/AmountSat/Slider.value = _sat_amount
-	$HueShiftingOptions/AmountValue/Spinbox.value = _value_amount
-	$HueShiftingOptions/AmountValue/Slider.value = _value_amount
-	$Amount.visible = _shading_mode == ShadingMode.SIMPLE
+	$AmountSlider.value = _amount
+	$HueShiftingOptions/HueSlider.value = _hue_amount
+	$HueShiftingOptions/SatSlider.value = _sat_amount
+	$HueShiftingOptions/ValueSlider.value = _value_amount
+	$AmountSlider.visible = _shading_mode == ShadingMode.SIMPLE
 	$HueShiftingOptions.visible = _shading_mode == ShadingMode.HUE_SHIFTING
 	update_strength()
 
@@ -210,8 +206,9 @@ func update_strength() -> void:
 
 
 func draw_start(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_start(position)
-	if Input.is_action_pressed("alt"):
+	if Input.is_action_pressed("draw_color_picker"):
 		_picking_color = true
 		_pick_color(position)
 		return
@@ -225,8 +222,11 @@ func draw_start(position: Vector2) -> void:
 	prepare_undo("Draw")
 	_drawer.reset()
 
-	_draw_line = Tools.shift
+	_draw_line = Input.is_action_pressed("draw_create_line")
 	if _draw_line:
+		if Global.mirror_view:
+			# mirroring position is ONLY required by "Preview"
+			position.x = (Global.current_project.size.x - 1) - position.x
 		_line_start = position
 		_line_end = position
 		update_line_polylines(_line_start, _line_end)
@@ -238,14 +238,18 @@ func draw_start(position: Vector2) -> void:
 
 
 func draw_move(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_move(position)
 	if _picking_color:  # Still return even if we released Alt
-		if Input.is_action_pressed("alt"):
+		if Input.is_action_pressed("draw_color_picker"):
 			_pick_color(position)
 		return
 
 	if _draw_line:
-		var d = _line_angle_constraint(_line_start, position)
+		if Global.mirror_view:
+			# mirroring position is ONLY required by "Preview"
+			position.x = (Global.current_project.size.x - 1) - position.x
+		var d := _line_angle_constraint(_line_start, position)
 		_line_end = d.position
 		cursor_text = d.text
 		update_line_polylines(_line_start, _line_end)
@@ -257,11 +261,16 @@ func draw_move(position: Vector2) -> void:
 
 
 func draw_end(position: Vector2) -> void:
+	position = snap_position(position)
 	.draw_end(position)
 	if _picking_color:
 		return
 
 	if _draw_line:
+		if Global.mirror_view:
+			# now we revert back the coordinates from their mirror form so that line can be drawn
+			_line_start.x = (Global.current_project.size.x - 1) - _line_start.x
+			_line_end.x = (Global.current_project.size.x - 1) - _line_end.x
 		draw_tool(_line_start)
 		draw_fill_gap(_line_start, _line_end)
 		_draw_line = false

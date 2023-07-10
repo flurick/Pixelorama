@@ -3,6 +3,7 @@ extends Node
 # Thanks to Pukkah from GitHub for providing the original code
 
 signal in_focus
+signal image_loaded  # emits a signal for returning loaded image info
 
 
 func _ready() -> void:
@@ -70,7 +71,9 @@ func _define_js() -> void:
 	)
 
 
-func load_image() -> void:
+# If (load_directly = false) then image info (image and its name)
+# will not be directly farwarded it to OpenSave
+func load_image(load_directly := true):
 	if OS.get_name() != "HTML5" or !OS.has_feature("JavaScript"):
 		return
 
@@ -97,8 +100,18 @@ func load_image() -> void:
 
 	var image = Image.new()
 	var image_error
+	var image_info: Dictionary = {}
 	match image_type:
 		"image/png":
+			if load_directly:
+				# In this case we can afford to try APNG,
+				# because we know we're sending it through OpenSave handling.
+				# Otherwise we could end up passing something incompatible.
+				var res := AImgIOAPNGImporter.load_from_buffer(image_data)
+				if res[0] == null:
+					# Success, pass to OpenSave.
+					OpenSave.handle_loading_aimg(image_name, res[1])
+					return
 			image_error = image.load_png_from_buffer(image_data)
 		"image/jpeg":
 			image_error = image.load_jpg_from_buffer(image_data)
@@ -111,7 +124,10 @@ func load_image() -> void:
 		print("An error occurred while trying to display the image.")
 		return
 	else:
-		OpenSave.handle_loading_image(image_name, image)
+		image_info = {"image": image, "name": image_name}
+		if load_directly:
+			OpenSave.handle_loading_image(image_name, image)
+	emit_signal("image_loaded", image_info)
 
 
 func load_shader() -> void:

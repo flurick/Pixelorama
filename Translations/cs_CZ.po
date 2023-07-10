@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
-"PO-Revision-Date: 2022-01-05 00:44\n"
+"PO-Revision-Date: 2023-07-04 11:08\n"
 
 msgid "OK"
 msgstr "OK"
@@ -66,6 +66,9 @@ msgstr "Výběr"
 msgid "View"
 msgstr "Zobrazení"
 
+msgid "Window"
+msgstr "Okno"
+
 msgid "Image"
 msgstr "Obrázek"
 
@@ -99,6 +102,9 @@ msgstr "Importovat"
 msgid "Export"
 msgstr "Exportovat"
 
+msgid "Overwrite"
+msgstr "Přepsat"
+
 msgid "Export..."
 msgstr "Exportovat..."
 
@@ -129,6 +135,9 @@ msgstr "Vyjmout"
 msgid "Paste"
 msgstr "Vložit"
 
+msgid "Paste in Place"
+msgstr ""
+
 msgid "Delete"
 msgstr "Smazat"
 
@@ -150,11 +159,36 @@ msgstr "Oříznout obrázek"
 msgid "Resize Canvas"
 msgstr "Upravit velikost plátna"
 
+msgid "Offset Image"
+msgstr ""
+
+msgid "Offset:"
+msgstr ""
+
+#. Found in the Offset Image dialog. It's a checkbox that, if enabled, wraps around the image if pixels go out of canvas bounds.
+msgid "Wrap around:"
+msgstr ""
+
 msgid "Centralize Image"
 msgstr "Vycentrovat obrázek"
 
 msgid "Rotate Image"
 msgstr "Otočit obrázek"
+
+msgid "Pivot x:"
+msgstr ""
+
+msgid "Pivot y:"
+msgstr ""
+
+msgid "Smear options:"
+msgstr ""
+
+msgid "Tolerance:"
+msgstr ""
+
+msgid "Initial angle:"
+msgstr ""
 
 msgid "Clear"
 msgstr "Zrušit"
@@ -162,8 +196,11 @@ msgstr "Zrušit"
 msgid "Invert"
 msgstr "Invertovat"
 
-msgid "Flip"
-msgstr "Převrátit obrázek"
+msgid "Grayscale View"
+msgstr ""
+
+msgid "Mirror Image"
+msgstr ""
 
 msgid "Flip Horizontal"
 msgstr "Převrátit vodorovně"
@@ -177,11 +214,77 @@ msgstr "Nastavení"
 msgid "Tile Mode"
 msgstr "Dlaždicový režim"
 
+msgid "Tile Mode Offsets"
+msgstr ""
+
+msgid "X-basis x:"
+msgstr ""
+
+msgid "X-basis y:"
+msgstr ""
+
+msgid "Y-basis x:"
+msgstr ""
+
+msgid "Y-basis y:"
+msgstr ""
+
+msgid "Tile Mask"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Use Current Frame"
+msgstr ""
+
+msgid "Reset Mask"
+msgstr ""
+
 msgid "Window Opacity"
 msgstr "Průhlednost okna"
 
+msgid "Window opacity does not work on fullscreen mode."
+msgstr ""
+
 msgid "Panel Layout"
 msgstr "Rozložení panelů"
+
+msgid "Panels"
+msgstr ""
+
+msgid "Layouts"
+msgstr ""
+
+msgid "Moveable Panels"
+msgstr ""
+
+msgid "Manage Layouts"
+msgstr ""
+
+#. Noun, a preview of something
+msgid "Preview"
+msgstr ""
+
+#. Found in the manage layouts dialog
+msgid "This is a preview, changing this won't change the layout"
+msgstr ""
+
+#. Found in the manage layouts dialog
+msgid "Double click to set as new startup layout"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Add Layout"
+msgstr ""
+
+msgid "Edit Layout"
+msgstr ""
+
+msgid "Are you sure you want to delete this layout?"
+msgstr ""
 
 msgid "Auto"
 msgstr "Automaticky"
@@ -207,6 +310,26 @@ msgstr "Zobrazit pravítka"
 msgid "Show Guides"
 msgstr "Zobrazit vodítka"
 
+#. Found under the View menu.
+msgid "Show Mouse Guides"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap To"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap to Rectangular Grid"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap to Guides"
+msgstr ""
+
+#. Found under the View menu.
+msgid "Snap to Perspective Guides"
+msgstr ""
+
 msgid "Show Animation Timeline"
 msgstr "Zobrazit animační panel"
 
@@ -231,14 +354,17 @@ msgstr "Nastavení importu"
 msgid "Import as:"
 msgstr "Importovat jako:"
 
+msgid "Apply to all"
+msgstr ""
+
 msgid "Recent projects"
 msgstr "Nedávné projekty"
 
-msgid "New tab"
-msgstr "Nová záložka"
+msgid "New project"
+msgstr ""
 
-msgid "Spritesheet (new tab)"
-msgstr "Spritesheet (nová záložka)"
+msgid "Spritesheet (new project)"
+msgstr ""
 
 msgid "Spritesheet (new layer)"
 msgstr "Spritesheet (nová vrstva)"
@@ -246,11 +372,14 @@ msgstr "Spritesheet (nová vrstva)"
 msgid "New frame"
 msgstr "Nový snímek"
 
-msgid "Replace frame"
-msgstr "Nahradit snímek"
+msgid "Replace cel"
+msgstr ""
 
 msgid "New layer"
 msgstr "Nová vrstva"
+
+msgid "New reference image"
+msgstr ""
 
 msgid "New palette"
 msgstr "Nová paleta"
@@ -269,6 +398,9 @@ msgstr "Svislé snímky:"
 
 msgid "Start frame:"
 msgstr "První snímek:"
+
+msgid "End frame:"
+msgstr ""
 
 msgid "At frame:"
 msgstr "Na snímku:"
@@ -300,19 +432,33 @@ msgstr "Exportovat obrázek"
 msgid "File Exists, Overwrite?"
 msgstr "Soubor existuje, přepsat?"
 
-msgid "File %s already exists. Overwrite?"
-msgstr "Soubor %s již existuje. Přepsat?"
+msgid "The following files already exist. Do you wish to overwrite them?\n"
+"%s"
+msgstr ""
 
-msgid "Directory path or file name is not valid!"
-msgstr "Cesta složky nebo název souboru je neplatný!"
+msgid "Directory path is not valid!"
+msgstr ""
+
+msgid "File name is not valid!"
+msgstr ""
+
+msgid "Directory path and file name are not valid!"
+msgstr ""
 
 msgid "Exporting in progress..."
 msgstr "Probíhá export..."
+
+msgid "Can't load file '%s'."
+msgstr ""
 
 msgid "Can't load file '%s'.\n"
 "Error code: %s"
 msgstr "Nelze načíst soubor '%s'.\n"
 "Kód chyby: %s"
+
+msgid "Can't load file '%s'.\n"
+"This is not a valid palette file."
+msgstr ""
 
 msgid "Frame"
 msgstr "Snímek"
@@ -356,14 +502,35 @@ msgstr "Vybrat aktuální složku"
 msgid "Open a Directory"
 msgstr "Otevřít složku"
 
-msgid "All frames as multiple files"
-msgstr "Všechny snímky jako více souborů"
-
-msgid "All frames as a single file animation"
-msgstr "Všechny snímky jako jeden soubor animace"
-
 msgid "Background:"
 msgstr "Pozadí:"
+
+#. Found in the export dialog
+msgid "Selected frames"
+msgstr ""
+
+msgid "Layers:"
+msgstr ""
+
+#. Found in the export dialog
+msgid "Visible layers"
+msgstr ""
+
+#. Found in the export dialog
+msgid "Selected layers"
+msgstr ""
+
+#. A type of layer. A pixel layer is the most common type of layer, which stores image data in pixels.
+msgid "Pixel layer:"
+msgstr ""
+
+#. A type of layer. A group layer stores other layers as its children, similar to how a folder holds files.
+msgid "Group layer:"
+msgstr ""
+
+#. A type of layer. A 3D layer contains data of 3D objects that are rasterized automatically by Pixelorama.
+msgid "3D layer:"
+msgstr ""
 
 msgid "Direction:"
 msgstr "Směr:"
@@ -389,6 +556,10 @@ msgstr "Řádky"
 msgid "Rows:"
 msgstr "Řádky:"
 
+#. Found in the export dialog. It is a label that says the dimensions (widthxheight) of the exported image(s).
+msgid "Export dimensions:"
+msgstr ""
+
 msgid "Path:"
 msgstr "Cesta:"
 
@@ -400,6 +571,10 @@ msgstr "Vytvořit složku"
 
 msgid "File:"
 msgstr "Soubor:"
+
+#. Found in the export dialog. It is a button that when pressed, shows more options.
+msgid "Advanced options"
+msgstr ""
 
 msgid "Interpolation:"
 msgstr "Interpolace:"
@@ -415,6 +590,9 @@ msgstr "Kubická"
 
 msgid "Trilinear"
 msgstr "Trilineární"
+
+msgid "Constant"
+msgstr ""
 
 msgid "General"
 msgstr "Obecné"
@@ -434,6 +612,10 @@ msgstr "Motivy"
 msgid "Canvas"
 msgstr "Plátno"
 
+#. Refers to the animation timeline.
+msgid "Timeline"
+msgstr ""
+
 msgid "Selection"
 msgstr "Výběr"
 
@@ -446,8 +628,22 @@ msgstr "Zálohování"
 msgid "Performance"
 msgstr "Výkon"
 
+#. Found in the preferences. Refers to device drivers, such as video drivers and tablet drivers.
+msgid "Drivers"
+msgstr ""
+
+msgid "Extensions"
+msgstr ""
+
+msgid "Cursors"
+msgstr ""
+
 msgid "Indicators"
 msgstr "Indikátory"
+
+#. Found in the preferences. Used for options that require restart when they are changed.
+msgid "Pixelorama must be restarted for changes to take effect."
+msgstr ""
 
 msgid "On"
 msgstr "Zapnuto"
@@ -479,8 +675,8 @@ msgstr "Barva vodítka:"
 msgid "System Language"
 msgstr "Systémový jazyk"
 
-msgid "Display Scale"
-msgstr "Měřítko rozhraní"
+msgid "Display scale:"
+msgstr ""
 
 msgid "Dim interface on dialog popup"
 msgstr "Ztmavit rozhraní při vyskakovacím okně"
@@ -506,11 +702,29 @@ msgstr "Fialová"
 msgid "Theme"
 msgstr "Motiv"
 
+msgid "Buttons"
+msgstr ""
+
 msgid "Icon color from:"
 msgstr "Barvy ikon z:"
 
 msgid "Icon color:"
 msgstr "Barva ikon:"
+
+msgid "Background"
+msgstr ""
+
+msgid "Background color from:"
+msgstr ""
+
+msgid "Background color:"
+msgstr ""
+
+msgid "Left tool color:"
+msgstr ""
+
+msgid "Right tool color:"
+msgstr ""
 
 msgid "Tool button size:"
 msgstr "Velkost tlačítek nástrojů:"
@@ -560,11 +774,73 @@ msgstr "Odstíny šedi"
 msgid "Outline"
 msgstr "Obrys"
 
+msgid "Drop Shadow"
+msgstr ""
+
+msgid "Offset X:"
+msgstr ""
+
+msgid "Offset Y:"
+msgstr ""
+
+msgid "Shadow color:"
+msgstr ""
+
 msgid "Adjust Hue/Saturation/Value"
 msgstr "Upravit odstín/sytost/hodnotu"
 
 msgid "Gradient"
 msgstr "Gradient"
+
+msgid "Gradient Map"
+msgstr ""
+
+msgid "Divide into equal parts"
+msgstr ""
+
+msgid "Parts:"
+msgstr ""
+
+msgid "Add point at the end"
+msgstr ""
+
+msgid "If this is enabled, the last point gets added at the end of the gradient.\n"
+"Disable this if you wish to convert the gradient to have constant interpolation, so that the last color will be taken into account."
+msgstr ""
+
+msgid "Shape:"
+msgstr ""
+
+msgid "Linear"
+msgstr ""
+
+msgid "Radial"
+msgstr ""
+
+#. Found in the Gradient dialog, under the image menu. Specifies if the gradient will repeat or not.
+msgid "Repeat:"
+msgstr ""
+
+#. Found in the Gradient dialog, under the image menu. Specifies if the gradient will repeat or not.
+msgid "Repeat"
+msgstr ""
+
+#. Found in the Gradient dialog, under the image menu. It is one of the repeat options.
+msgid "Mirror"
+msgstr ""
+
+#. Found in the Gradient dialog, under the image menu. It is one of the repeat options. If Truncate is selected, the gradient gets cut at the edges.
+msgid "Truncate"
+msgstr ""
+
+msgid "Transition size:"
+msgstr ""
+
+msgid "Center:"
+msgstr ""
+
+msgid "Dithering pattern:"
+msgstr ""
 
 msgid "Adjust HSV"
 msgstr "Upravit odstín/sytost/hodnotu"
@@ -602,17 +878,17 @@ msgstr "Barvy:"
 msgid "Steps:"
 msgstr "Kroky:"
 
-msgid "Top to Bottom"
-msgstr "Od shora dolů"
+#. An image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
+msgid "Posterize"
+msgstr ""
 
-msgid "Bottom to Top"
-msgstr "Ze spoda nahoru"
+#. An option for the posterize image effect. For more details about what it does, you can refer to GIMP's documentation https://docs.gimp.org/2.8/en/gimp-tool-posterize.html
+msgid "Posterize levels:"
+msgstr ""
 
-msgid "Left to Right"
-msgstr "Zleva doprava"
-
-msgid "Right to Left"
-msgstr "Zprava doleva"
+#. An option for the posterize image effect.
+msgid "Dither intensity:"
+msgstr ""
 
 msgid "View Splash Screen"
 msgstr "Zobrazit úvodní okno"
@@ -740,6 +1016,21 @@ msgstr "Japonština"
 msgid "Ukrainian"
 msgstr "Ukrajinština"
 
+msgid "Danish"
+msgstr "Dánština"
+
+msgid "Swedish"
+msgstr "Švědština"
+
+msgid "Serbian (Cyrillic)"
+msgstr "Srbština (Cyrilice)"
+
+msgid "Dutch"
+msgstr "Nizozemština"
+
+msgid "Belarusian"
+msgstr ""
+
 msgid "Development Team"
 msgstr "Vývojářský tým"
 
@@ -799,13 +1090,11 @@ msgstr "Elipsový výběr\n\n"
 "%s pro levé tlačítko myši\n"
 "%s pro pravé tlačítko myši"
 
-msgid "Polygonal Selection\n"
-"Double-click to connect the last point to the starting point\n\n"
+msgid "Polygonal Selection\n\n"
 "%s for left mouse button\n"
-"%s for right mouse button"
-msgstr "Polygonální výběr\n\n"
-"%s pro levé tlačítko myši\n"
-"%s pro pravé tlačítko myši"
+"%s for right mouse button\n\n"
+"Double-click to connect the last point to the starting point"
+msgstr ""
 
 msgid "Select By Color\n\n"
 "%s for left mouse button\n"
@@ -849,14 +1138,11 @@ msgstr "Posun plátna\n\n"
 "%s pro levé tlačítko myši\n"
 "%s pro pravé tlačítko myši"
 
-msgid "Color Picker\n"
-"Select a color from a pixel of the sprite\n\n"
+msgid "Color Picker\n\n"
 "%s for left mouse button\n"
-"%s for right mouse button"
-msgstr "Výběr barvy\n"
-"Vyberte barvu z pixelu obrázku\n\n"
-"%s pro levé tlačítko myši\n"
-"%s pro pravé tlačítko myši"
+"%s for right mouse button\n\n"
+"Select a color from a pixel of the sprite"
+msgstr ""
 
 msgid "Pencil\n\n"
 "%s for left mouse button\n"
@@ -979,6 +1265,12 @@ msgstr "Zobrazit ikonu pravého nástroje"
 msgid "Displays an icon of the selected right tool next to the cursor on the canvas"
 msgstr "Zobrazí ikonu vybraného pravého nástroje vedle kurzoru na plátně"
 
+msgid "Use native mouse cursors"
+msgstr ""
+
+msgid "Use cross cursor for the canvas"
+msgstr ""
+
 msgid "Guides"
 msgstr "Vodítka"
 
@@ -987,6 +1279,18 @@ msgstr "Barva vodítek:"
 
 msgid "A color of ruler guides displayed on the canvas"
 msgstr "Barva vodítkových čar zobrazených přes plátno"
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping.
+msgid "Snapping"
+msgstr ""
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping.
+msgid "Snapping distance:"
+msgstr ""
+
+#. Found in the Preferences, in the Canvas tab. Refers to grid and guide snapping. Hint tooltip of the snapping distance slider.
+msgid "This is the distance in pixels where guide and grid snapping gets activated."
+msgstr ""
 
 msgid "Grid"
 msgstr "Mřížka"
@@ -1006,41 +1310,21 @@ msgstr "Isometrická"
 msgid "All"
 msgstr "Vše"
 
-msgid "Rectangular grid width:"
-msgstr "Šířka obdélníkové mřížky:"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Rectangular grid size:"
+msgstr ""
 
-msgid "Sets how far apart are vertical lines of the rectangular grid"
-msgstr "Jak daleko od sebe jsou svislé čáry obdélníkové mřížky"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Isometric grid size:"
+msgstr ""
 
-msgid "Rectangular grid height:"
-msgstr "Výška obdélníkové mřížky:"
+#. Found in the Preferences, in the Canvas tab.
+msgid "Grid offset:"
+msgstr ""
 
-msgid "Sets how far apart are horizontal lines of the rectangular grid"
-msgstr "Jak daleko od sebe jsou vodorovné čáry obdélníkové mřížky"
-
-msgid "Isometric cell bounds width:"
-msgstr "Šířka isometrických buněk:"
-
-msgid "Sets the width of the isometric cell's axis aligned bounding box"
-msgstr "Šířka boxu který ohraničuje isometrickou buňku"
-
-msgid "Isometric cell bounds height:"
-msgstr "Výška isometrických buněk:"
-
-msgid "Sets the height of the isometric cell's axis aligned bounding box"
-msgstr "Výška boxu který ohraničuje isometrickou buňku"
-
-msgid "Grid offset x:"
-msgstr "Odsazení mřížky x:"
-
-msgid "Sets grid's x offset from the canvas origin (top left corner of the image)"
-msgstr "Odsazení mřížky na ose x od počátku plátna (levý horní roh obrázku)"
-
-msgid "Grid offset y:"
-msgstr "Odsazení mřížky y:"
-
-msgid "Sets grid's y offset from the canvas origin (top left corner of the image)"
-msgstr "Odsazení mřížky na ose y od počátku plátna (levý horní roh obrázku)"
+#. Found in the Preferences, in the Canvas tab. Hint tooltip of the grid offset value sliders.
+msgid "Sets grid's offset from the canvas origin (top left corner of the image)"
+msgstr ""
 
 msgid "Draw over Tile Mode:"
 msgstr "Vykreslit přes dlaždicový režim:"
@@ -1102,6 +1386,18 @@ msgstr "Sledovat přiblížení plátna"
 msgid "The transparent checker follow the zoom level of canvas"
 msgstr "Průhledná šachovnice následuje úroveň přiblížení plátna"
 
+#. Found in the Preferences, under Timeline. If this is enabled, clicking on the layer buttons (such as lock, invisible etc) will automatically select that layer.
+msgid "Select layer when clicking on one of its buttons:"
+msgstr ""
+
+#. Found in the Preferences, under Timeline. Changes the color of the past (previous) frames in onion skinning, if color mode is enabled.
+msgid "Onion skinning past color:"
+msgstr ""
+
+#. Found in the Preferences, under Timeline. Changes the color of the past (previous) frames in onion skinning, if color mode is enabled.
+msgid "Onion skinning future color:"
+msgstr ""
+
 msgid "Animated selection borders"
 msgstr "Animovat okraje rámečku"
 
@@ -1127,6 +1423,73 @@ msgstr "Nastaví limit snímků za vteřinu aplikace. Čím nižší číslo, t�
 msgid "If this is toggled on, when the application's window loses focus, it gets paused. This helps lower CPU usage when idle. The application gets unpaused when the mouse enters the application's window."
 msgstr "Pokud je tato možnost vybrána, tak je aplikace pozastavena, když je okno aplikace v pozadí. Dojde tak ke snížení využití procesoru při nečinnosti. Aplikace se automaticky obnoví, když kurzor myši vstoupí zpět do okna aplikace."
 
+#. Found in the Preferences, under Drivers. Specifies the renderer/video driver being used.
+msgid "Renderer:"
+msgstr ""
+
+#. Found in the Preferences, under Drivers. Hint tooltip of the renderer option.
+msgid "Specifies the renderer/video driver being used. GLES2 is better for older and low-end devices, but GLES3 may offer more features."
+msgstr ""
+
+#. Found in the Preferences, under Drivers. Specifies the tablet driver being used on Windows.
+msgid "Tablet driver:"
+msgstr ""
+
+#. Found in the Preferences, under Drivers. Hint tooltip of the tablet driver option.
+msgid "Specifies the tablet driver being used on Windows. If you have Windows Ink enabled, select winink."
+msgstr ""
+
+msgid "Add Extension"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Disable"
+msgstr ""
+
+msgid "Uninstall"
+msgstr ""
+
+msgid "Open Folder"
+msgstr ""
+
+#. Hint tooltip of a button in the Global Tool Settings. "Dynamics" let users affect certain brush parameters, such as their size and alpha, based on the pressure of the tablet pen, the velocity of the mouse or the pen, and more in the future.
+msgid "Dynamics"
+msgstr ""
+
+#. Found in the Dynamics options menu. Pressure refers to tablet pen pressure.
+msgid "Pressure"
+msgstr ""
+
+#. Found in the Dynamics options menu. Velocity refers to mouse or tablet pen velocity, meaning how fast it moves.
+msgid "Velocity"
+msgstr ""
+
+#. Refers to the alpha channel of the colors, in the RGBA color model. The alpha channel is responsible for the transparency of the color.
+msgid "Alpha"
+msgstr ""
+
+#. Refers to the size of a value, for example the size of a brush.
+msgid "Size"
+msgstr ""
+
+#. Found in the Dynamics options menu. Sets the limits of the brush property values, such as the minimum and maximum values of alpha and size.
+msgid "Value limits"
+msgstr ""
+
+#. Found in the Dynamics options menu. Sets the thresholds of the dynamic properties, such as the minimum and maximum values of pressure and velocity.
+msgid "Thresholds"
+msgstr ""
+
+#. Noun, the start of something.
+msgid "Start"
+msgstr ""
+
+#. Noun, the end of something.
+msgid "End"
+msgstr ""
+
 msgid "Brush:"
 msgstr "Štětec:"
 
@@ -1148,8 +1511,8 @@ msgstr "Vlastní štětec"
 msgid "Brush size:"
 msgstr "Velikost štětce:"
 
-msgid "Overwrite Color"
-msgstr "Přepsat barvu"
+msgid "Overwrite color"
+msgstr ""
 
 msgid "Overwrites color instead of blending it. This option is only relevant with colors that are not fully opaque"
 msgstr "Přepíše barvu namísto smíchání. Tato možnost je relevantní pouze pro barvy, které jsou průhledné."
@@ -1160,8 +1523,21 @@ msgstr "Pixel perfekt"
 msgid "Fill inside"
 msgstr "Vyplnit uvnitř"
 
-msgid "Makes lines smooth by removing the extra pixels on the edges"
-msgstr "Vyhladí čáry odstraněním pixelů navíc na okrajích"
+#. Found in the tool options of the Pencil tool, and refers to the spacing between brush strokes.
+msgid "Spacing"
+msgstr ""
+
+#. Found in the tool options of the Pencil tool if "Spacing" is enabled, and refers to the horizontal gap between brush strokes.
+msgid "Gap X:"
+msgstr ""
+
+#. Found in the tool options of the Pencil tool if "Spacing" is enabled, and refers to the vertical gap between brush strokes.
+msgid "Gap Y:"
+msgstr ""
+
+msgid "Pixel Perfect\n"
+"Makes lines smooth by removing the extra pixels on the edges"
+msgstr ""
 
 msgid "Fill Shape"
 msgstr "Vyplnit tvar"
@@ -1175,21 +1551,30 @@ msgstr "Barva štětce z"
 msgid "0: Color from the brush itself, 100: the currently selected color"
 msgstr "0: Barva ze štětce, 100: aktuálně vybraná barva"
 
+#. Found in the bucket tool options.
 msgid "Fill area:"
-msgstr "Vyplnit oblast:"
+msgstr ""
 
-msgid "Same color area"
-msgstr "Oblast stejné barvy"
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Similar area"
+msgstr ""
 
-msgid "Same color pixels"
-msgstr "Pixely stejné barvy"
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Similar colors"
+msgstr ""
+
+#. Found in the bucket tool options, one of the fill area options.
+msgid "Whole selection"
+msgstr ""
 
 msgid "Fill with:"
 msgstr "Vyplnit pomocí:"
 
-msgid "Selected Color"
-msgstr "Vybraná barva"
+#. Found in the bucket tool options, one of the fill with options.
+msgid "Selected color"
+msgstr ""
 
+#. Found in the bucket tool options, one of the fill with options.
 msgid "Pattern"
 msgstr "Šablona"
 
@@ -1241,6 +1626,22 @@ msgstr "Přizpůsobit snímku"
 msgid "100% Zoom"
 msgstr "100% přiblížení"
 
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Replace selection"
+msgstr ""
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Add to selection"
+msgstr ""
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Subtract from selection"
+msgstr ""
+
+#. One of the modes of a selection tool. Found in the tool options, when a selection tool is active.
+msgid "Intersection of selections"
+msgstr ""
+
 msgid "Mirroring"
 msgstr "Zrcadlení"
 
@@ -1258,6 +1659,12 @@ msgstr "Svisle"
 
 msgid "Current frame:"
 msgstr "Aktuální snímek:"
+
+msgid "Animation mode:"
+msgstr ""
+
+msgid "Current frame as spritesheet"
+msgstr ""
 
 msgid "Jump to the first frame\n"
 "(%s)"
@@ -1350,8 +1757,9 @@ msgid "If it's selected, the animation plays only on the frames that have the sa
 msgstr "Pokud je vybráno, animace se přehrává pouze na snímcích, které mají stejný štítek.\n"
 "Pokud ne, animace bude přehrávána pro všechny snímky a ignoruje štítky."
 
-msgid "Blue-Red Mode"
-msgstr "Modro-červený režim"
+#. Found in the timeline, inside the onion skinning settings. If this is enabled, the past and future frames will have appear tinted.
+msgid "Color mode"
+msgstr ""
 
 msgid "Show past frames:"
 msgstr "Zobrazit předchozí snímky:"
@@ -1386,11 +1794,11 @@ msgstr "Přesunout doprava"
 msgid "Add Frame Tag"
 msgstr ""
 
-msgid "Link Cel"
-msgstr "Připojit buňku"
+msgid "Link Cels to"
+msgstr ""
 
-msgid "Unlink Cel"
-msgstr "Odpojit buňku"
+msgid "Unlink Cels"
+msgstr ""
 
 msgid "Frame Properties"
 msgstr "Vlastnosti snímku"
@@ -1398,14 +1806,34 @@ msgstr "Vlastnosti snímku"
 msgid "Frame properties"
 msgstr "Vlastnosti snímku"
 
+#. Found on the popup menu that appears when a user right-clicks on a frame button. When clicked, the order of the selected frames is being reversed.
+msgid "Reverse Frames"
+msgstr ""
+
 msgid "Layer"
 msgstr "Vrstva"
+
+msgid "Group"
+msgstr ""
 
 msgid "Layers"
 msgstr "Vrstvy"
 
+#. Hint tooltip of the create new layer button, found on the left side of the timeline.
 msgid "Create a new layer"
 msgstr "Vytvořit novou vrstvu"
+
+#. One of the options of the create new layer button.
+msgid "Add Pixel Layer"
+msgstr ""
+
+#. One of the options of the create new layer button.
+msgid "Add Group Layer"
+msgstr ""
+
+#. One of the options of the create new layer button.
+msgid "Add 3D Layer"
+msgstr ""
 
 msgid "Remove current layer"
 msgstr "Odstranit aktuální vrstvu"
@@ -1437,10 +1865,12 @@ msgstr "Zamknout/odemknout vrstvu"
 msgid "Frame: %s, Layer: %s"
 msgstr "Snímek: %s, Vrstva: %s"
 
-msgid "Enable/disable cel linking\n\n"
-"Linked cels are being shared across multiple frames"
-msgstr "Povolit/zakázat propojení buněk\n\n"
-"Propojené buňky jsou sdíleny přes vícero snímků"
+msgid "Enable/disable automatic linking of new cels when creating new frames\n\n"
+"Linked cels share content across multiple frames"
+msgstr ""
+
+msgid "Expand/collapse group"
+msgstr ""
 
 msgid "Palette"
 msgstr "Paleta"
@@ -1556,8 +1986,8 @@ msgstr "Otevření souboru se nezdařilo. Chybový kód %s"
 msgid "File failed to save. Error code %s"
 msgstr "Soubor se nepodařilo uložit. Kód chyby %s"
 
-msgid "File exported"
-msgstr "Soubor exportován"
+msgid "File(s) exported"
+msgstr ""
 
 msgid "New Empty Palette"
 msgstr "Nová prázdná paleta"
@@ -1692,7 +2122,7 @@ msgid "Pan"
 msgstr "Posun plátna"
 
 msgid "Color Picker"
-msgstr "Kapátko"
+msgstr "Výběr barvy"
 
 msgid "Pencil"
 msgstr "Tužka"
@@ -1772,17 +2202,31 @@ msgstr "Interval automatického ukládání:"
 msgid "minute(s)"
 msgstr "minuta(y)"
 
-msgid "Create new directory for each frame tag"
-msgstr "Vytvořit novou složku pro každý snímkový štítek"
+#. Found in the export dialog.
+msgid "Include frame tags in the file name"
+msgstr ""
 
-msgid "Creates multiple files but every file is stored in different directory that corresponds to its frame tag"
-msgstr "Vytvoří více souborů, ale každý soubor je uložen v jiném adresáři, který odpovídá snímkovému štítku"
+#. Found in the export dialog.
+msgid "Create new folder for each frame tag"
+msgstr ""
+
+#. Found in the export dialog, as a hint tooltip of the "Create new folder for each frame tag" button
+msgid "Creates multiple files but every file is stored in different folder that corresponds to its frame tag"
+msgstr ""
+
+#. Found in the export dialog. Refers to text characters that acts as separators between text. For example, the "_" in "name_0001".
+msgid "Separator character(s):"
+msgstr ""
+
+#. Found in the export dialog, as a hint tooltip of the separator character(s) text field.
+msgid "The character(s) that separate the file name and the frame number"
+msgstr ""
 
 msgid "Close"
 msgstr "Zavřít"
 
-msgid "Delete"
-msgstr "Smazat"
+msgid "Discard All"
+msgstr ""
 
 msgid "Autosaved project(s) from a crashed session were found.\n"
 "Do you want to recover the data?"
@@ -1804,9 +2248,6 @@ msgstr "Nelze odstranit více palet!"
 msgid "Cannot remove the palette, because it doesn't exist!"
 msgstr "Nelze odstranit paletu, protože neexistuje!"
 
-msgid "An error occured while removing the palette! Error code: %s"
-msgstr "Při odstraňování palety došlo k chybě! Kód chyby: %s"
-
 msgid "and"
 msgstr "a"
 
@@ -1818,6 +2259,9 @@ msgstr "Přesunout vybraný snímek doprava."
 
 msgid "Frame duration"
 msgstr "Délka snímku"
+
+msgid "Duration"
+msgstr ""
 
 msgid "Tiled In Both Axis"
 msgstr "Obě osy"
@@ -1863,4 +2307,331 @@ msgstr "Zmenšení velikosti palety resetuje pozice barev. Barvy, které se neve
 
 msgid "Position:"
 msgstr "Pozice:"
+
+msgid "Tools"
+msgstr "Nástroje"
+
+msgid "Main Canvas"
+msgstr "Hlavní plátno"
+
+msgid "Second Canvas"
+msgstr "Druhé plátno"
+
+msgid "Animation Timeline"
+msgstr ""
+
+msgid "Canvas Preview"
+msgstr "Náhled plátna"
+
+msgid "Color Pickers"
+msgstr "Výběry barvy"
+
+msgid "Global Tool Options"
+msgstr "Globální možnosti nástrojů"
+
+msgid "Left Tool Options"
+msgstr "Možnosti levého nástroje"
+
+msgid "Right Tool Options"
+msgstr "Možnosti pravého nástroje"
+
+msgid "Reference Images"
+msgstr ""
+
+msgid "Perspective Editor"
+msgstr ""
+
+#. A UI panel. It is used to record the software in order to show the progress of art, usually in form of time lapses.
+msgid "Recorder"
+msgstr ""
+
+msgid "Crop"
+msgstr ""
+
+msgid "Resize the canvas"
+msgstr ""
+
+msgid "Margins"
+msgstr ""
+
+msgid "Position + Size"
+msgstr ""
+
+msgid "Locked Aspect Ratio"
+msgstr ""
+
+msgid "Margins:"
+msgstr ""
+
+msgid "Aspect Ratio:"
+msgstr ""
+
+msgid "Top:"
+msgstr ""
+
+msgid "Bottom:"
+msgstr ""
+
+msgid "Left:"
+msgstr ""
+
+msgid "Right:"
+msgstr ""
+
+msgid "Locked size\n\n"
+"When enabled using the tool on the canvas will only move the cropping rectangle.\n\n"
+"When disabled using the tool on the canvas will draw the rectangle."
+msgstr ""
+
+#. A tool used in 3D layers, that edits 3D objects.
+msgid "3D Shape Edit"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Box"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Sphere"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Capsule"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Cylinder"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Prism"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Torus"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Plane"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+#. Used in 3D layers. A type of light.
+msgid "Directional light"
+msgstr ""
+
+#. Used in 3D layers. A type of light.
+msgid "Spotlight"
+msgstr ""
+
+#. Used in 3D layers. A type of light.
+msgid "Point light"
+msgstr ""
+
+#. Used in 3D layers. A type of 3D object.
+msgid "Custom model"
+msgstr ""
+
+msgid "Selected object:"
+msgstr ""
+
+msgid "Add new object"
+msgstr ""
+
+msgid "Remove object"
+msgstr ""
+
+msgid "Camera"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. Refers to camera projection mode.
+msgid "Projection:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Perspective"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Orthogonal"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. One of the modes of camera projection.
+msgid "Frustum"
+msgstr ""
+
+msgid "Rotation:"
+msgstr ""
+
+msgid "Scale:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool.
+msgid "Environment"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
+msgid "Ambient color:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Environment category.
+msgid "Ambient color energy:"
+msgstr ""
+
+#. An option that toggles the visibility of something on or off. Found in the format of "Visible: on/off"
+msgid "Visible:"
+msgstr ""
+
+#. Refers to the transformation options of an object, such as its position, rotation and scale. For technical details, see https://docs.godotengine.org/en/stable/tutorials/math/matrices_and_transforms.html
+msgid "Transform"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool. A category with mesh-related options.
+msgid "Mesh"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Prism is selected. Refers to the displacement of the upper edge along the X axis.
+msgid "Left to right:"
+msgstr ""
+
+#. Radius of a circle/spherical object.
+msgid "Radius:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected.
+msgid "Radial segments:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a spherical object is selected. Refers to the number of segments along the height of the sphere.
+msgid "Rings:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Sphere is selected. If true, a hemisphere is created rather than a full sphere.
+msgid "Is hemisphere:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
+msgid "Top radius:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Cylinder is selected.
+msgid "Bottom radius:"
+msgstr ""
+
+msgid "Text:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Refers to the size of one pixel's width on the text to scale it in 3D.
+msgid "Pixel size:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Mesh category if a Text object is selected. Step (in pixels) used to approximate Bézier curves.
+msgid "Curve step:"
+msgstr ""
+
+msgid "Horizontal alignment:"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. Refers to the energy of the light. The more energy, the brighter it shines.
+msgid "Energy:"
+msgstr ""
+
+#. Found in the tool options of the 3D Shape Edit tool, under the Light category if a light is selected. If true, the light's effect is reversed, darkening areas and casting bright shadows.
+msgid "Negative:"
+msgstr ""
+
+msgid "Shadow:"
+msgstr ""
+
+#. Refers to the range of something, like the range of a spotlight.
+msgid "Range:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated.
+msgid "Animatable Properties"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the frame that is currently being previewed.
+msgid "Preview frame:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. It is a checkbox that toggles whether a property should be animated or not.
+msgid "Animate"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the initial value of the property.
+msgid "Initial value:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the final value of the property.
+msgid "Final value:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. Refers to the easing function that should be used to animate the property. https://easings.net/
+msgid "Ease type:"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Starts slowly and speeds up towards the end"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Starts quickly and slows down towards the end"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Slowest at both ends, fast at middle"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of easing function.
+msgid "Fast at both ends, slow at middle"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quadratic (power of 2)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Cubic (power of 3)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quartic (power of 4)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Quintic (power of 5)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Exponential (power of x)"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Square root"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Sine"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Wiggling around the edges"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Bouncing at the end"
+msgstr ""
+
+#. Found under certain image effects that support properties that can be animated. A type of interpolation.
+msgid "Backing out at ends"
+msgstr ""
 

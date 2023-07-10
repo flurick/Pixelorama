@@ -6,19 +6,20 @@ var _ready_to_apply := false
 
 
 func _input(event: InputEvent) -> void:
-	._input(event)
 	if _move:
 		return
 	if event is InputEventMouseMotion:
 		_last_position = Global.canvas.current_pixel.floor()
+		if Global.mirror_view:
+			_last_position.x = (Global.current_project.size.x - 1) - _last_position.x
 	elif event is InputEventMouseButton:
 		if event.doubleclick and event.button_index == tool_slot.button and _draw_points:
 			$DoubleClickTimer.start()
 			append_gap(_draw_points[-1], _draw_points[0], _draw_points)
 			_ready_to_apply = true
 			apply_selection(Vector2.ZERO)  # Argument doesn't matter
-	elif event is InputEventKey:
-		if event.is_action_pressed("escape") and _ongoing_selection:
+	else:
+		if event.is_action_pressed("transformation_cancel") and _ongoing_selection:
 			_ongoing_selection = false
 			_draw_points.clear()
 			_ready_to_apply = false
@@ -28,6 +29,7 @@ func _input(event: InputEvent) -> void:
 func draw_start(position: Vector2) -> void:
 	if !$DoubleClickTimer.is_stopped():
 		return
+	position = snap_position(position)
 	.draw_start(position)
 	if !_move and !_draw_points:
 		_ongoing_selection = true
@@ -38,12 +40,14 @@ func draw_start(position: Vector2) -> void:
 func draw_move(position: Vector2) -> void:
 	if selection_node.arrow_key_move:
 		return
+	position = snap_position(position)
 	.draw_move(position)
 
 
 func draw_end(position: Vector2) -> void:
 	if selection_node.arrow_key_move:
 		return
+	position = snap_position(position)
 	if !_move and _draw_points:
 		append_gap(_draw_points[-1], position, _draw_points)
 		if position == _draw_points[0] and _draw_points.size() > 1:
@@ -106,6 +110,7 @@ func draw_preview() -> void:
 
 
 func apply_selection(_position) -> void:
+	.apply_selection(_position)
 	if !_ready_to_apply:
 		return
 	var project: Project = Global.current_project
@@ -114,24 +119,22 @@ func apply_selection(_position) -> void:
 		cleared = true
 		Global.canvas.selection.clear_selection()
 	if _draw_points.size() > 3:
-		var selection_bitmap_copy: BitMap = project.selection_bitmap.duplicate()
-		var bitmap_size: Vector2 = selection_bitmap_copy.get_size()
+		var selection_map_copy := SelectionMap.new()
+		selection_map_copy.copy_from(project.selection_map)
 		if _intersect:
-			selection_bitmap_copy.set_bit_rect(Rect2(Vector2.ZERO, bitmap_size), false)
-		lasso_selection(selection_bitmap_copy, _draw_points)
+			selection_map_copy.clear()
+		lasso_selection(selection_map_copy, _draw_points)
 
 		# Handle mirroring
 		if Tools.horizontal_mirror:
-			lasso_selection(selection_bitmap_copy, mirror_array(_draw_points, true, false))
+			lasso_selection(selection_map_copy, mirror_array(_draw_points, true, false))
 			if Tools.vertical_mirror:
-				lasso_selection(selection_bitmap_copy, mirror_array(_draw_points, true, true))
+				lasso_selection(selection_map_copy, mirror_array(_draw_points, true, true))
 		if Tools.vertical_mirror:
-			lasso_selection(selection_bitmap_copy, mirror_array(_draw_points, false, true))
+			lasso_selection(selection_map_copy, mirror_array(_draw_points, false, true))
 
-		project.selection_bitmap = selection_bitmap_copy
-		Global.canvas.selection.big_bounding_rectangle = project.get_selection_rectangle(
-			project.selection_bitmap
-		)
+		project.selection_map = selection_map_copy
+		Global.canvas.selection.big_bounding_rectangle = project.selection_map.get_used_rect()
 	else:
 		if !cleared:
 			Global.canvas.selection.clear_selection()
@@ -143,17 +146,17 @@ func apply_selection(_position) -> void:
 	Global.canvas.previews.update()
 
 
-func lasso_selection(bitmap: BitMap, points: PoolVector2Array) -> void:
+func lasso_selection(selection_map: SelectionMap, points: PoolVector2Array) -> void:
 	var project: Project = Global.current_project
-	var size := bitmap.get_size()
+	var size := selection_map.get_size()
 	for point in points:
 		if point.x < 0 or point.y < 0 or point.x >= size.x or point.y >= size.y:
 			continue
 		if _intersect:
-			if project.selection_bitmap.get_bit(point):
-				bitmap.set_bit(point, true)
+			if project.selection_map.is_pixel_selected(point):
+				selection_map.select_pixel(point, true)
 		else:
-			bitmap.set_bit(point, !_subtract)
+			selection_map.select_pixel(point, !_subtract)
 
 	var v := Vector2()
 	var image_size: Vector2 = project.size
@@ -163,10 +166,10 @@ func lasso_selection(bitmap: BitMap, points: PoolVector2Array) -> void:
 			v.y = y
 			if Geometry.is_point_in_polygon(v, points):
 				if _intersect:
-					if project.selection_bitmap.get_bit(v):
-						bitmap.set_bit(v, true)
+					if project.selection_map.is_pixel_selected(v):
+						selection_map.select_pixel(v, true)
 				else:
-					bitmap.set_bit(v, !_subtract)
+					selection_map.select_pixel(v, !_subtract)
 
 
 # Bresenham's Algorithm
@@ -189,18 +192,6 @@ func append_gap(start: Vector2, end: Vector2, array: Array) -> void:
 			err += dx
 			y += sy
 		array.append(Vector2(x, y))
-
-
-func _fill_bitmap_with_points(points: Array, size: Vector2) -> BitMap:
-	var bitmap := BitMap.new()
-	bitmap.create(size)
-
-	for point in points:
-		if point.x < 0 or point.y < 0 or point.x >= size.x or point.y >= size.y:
-			continue
-		bitmap.set_bit(point, 1)
-
-	return bitmap
 
 
 func mirror_array(array: Array, h: bool, v: bool) -> Array:

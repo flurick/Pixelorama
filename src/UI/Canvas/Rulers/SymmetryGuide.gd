@@ -1,7 +1,7 @@
 class_name SymmetryGuide
 extends Guide
 
-var _texture = preload("res://assets/graphics/dotted_line.png")
+var _texture: Texture = preload("res://assets/graphics/dotted_line.png")
 
 
 func _ready() -> void:
@@ -28,5 +28,5 @@ func _input(_event: InputEvent) -> void:
 		project.x_symmetry_point = points[0].x * 2 - 1
 
 
-func outside_canvas() -> bool:
+func _outside_canvas() -> bool:
 	return false

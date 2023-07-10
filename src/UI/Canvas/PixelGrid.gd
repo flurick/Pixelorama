@@ -1,6 +1,10 @@
 extends Node2D
 
 
+func _ready() -> void:
+	Global.camera.connect("zoom_changed", self, "update")
+
+
 func _draw() -> void:
 	if not Global.draw_pixel_grid:
 		return
@@ -9,7 +13,7 @@ func _draw() -> void:
 	if zoom_percentage < Global.pixel_grid_show_at_zoom:
 		return
 
-	var target_rect: Rect2 = Global.current_project.get_tile_mode_rect()
+	var target_rect: Rect2 = Global.current_project.tiles.get_bounding_rect()
 	if target_rect.has_no_area():
 		return
 

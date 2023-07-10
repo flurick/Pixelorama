@@ -8,25 +8,25 @@ var _displace_origin = false  # Mouse Click + Alt
 
 
 func _input(event: InputEvent) -> void:
-	._input(event)
 	if !_move and !_rect.has_no_area():
-		if event.is_action_pressed("shift"):
+		if event.is_action_pressed("shape_perfect"):
 			_square = true
-		elif event.is_action_released("shift"):
+		elif event.is_action_released("shape_perfect"):
 			_square = false
-		if event.is_action_pressed("ctrl"):
+		if event.is_action_pressed("shape_center"):
 			_expand_from_center = true
-		elif event.is_action_released("ctrl"):
+		elif event.is_action_released("shape_center"):
 			_expand_from_center = false
-		if event.is_action_pressed("alt"):
+		if event.is_action_pressed("shape_displace"):
 			_displace_origin = true
-		elif event.is_action_released("alt"):
+		elif event.is_action_released("shape_displace"):
 			_displace_origin = false
 
 
 func draw_move(position: Vector2) -> void:
 	if selection_node.arrow_key_move:
 		return
+	position = snap_position(position)
 	.draw_move(position)
 	if !_move:
 		if _displace_origin:
@@ -39,6 +39,7 @@ func draw_move(position: Vector2) -> void:
 func draw_end(position: Vector2) -> void:
 	if selection_node.arrow_key_move:
 		return
+	position = snap_position(position)
 	.draw_end(position)
 	_rect = Rect2(0, 0, 0, 0)
 	_square = false
@@ -88,49 +89,40 @@ func draw_preview() -> void:
 		canvas.draw_set_transform(canvas.position, canvas.rotation, canvas.scale)
 
 
-func apply_selection(_position) -> void:
+func apply_selection(_position: Vector2) -> void:
+	.apply_selection(_position)
+	var project: Project = Global.current_project
 	if !_add and !_subtract and !_intersect:
 		Global.canvas.selection.clear_selection()
-		if _rect.size == Vector2.ZERO and Global.current_project.has_selection:
+		if _rect.size == Vector2.ZERO and project.has_selection:
 			Global.canvas.selection.commit_undo("Select", undo_data)
-	if _rect.size != Vector2.ZERO:
-		var operation := 0
-		if _subtract:
-			operation = 1
-		elif _intersect:
-			operation = 2
-		Global.canvas.selection.select_rect(_rect, operation)
+	if _rect.size == Vector2.ZERO:
+		return
+	var operation := 0
+	if _subtract:
+		operation = 1
+	elif _intersect:
+		operation = 2
+	Global.canvas.selection.select_rect(_rect, operation)
 
-		# Handle mirroring
-		if Tools.horizontal_mirror:
-			var mirror_x_rect := _rect
-			mirror_x_rect.position.x = (
-				Global.current_project.x_symmetry_point
-				- _rect.position.x
-				+ 1
-			)
-			mirror_x_rect.end.x = Global.current_project.x_symmetry_point - _rect.end.x + 1
-			Global.canvas.selection.select_rect(mirror_x_rect.abs(), operation)
-			if Tools.vertical_mirror:
-				var mirror_xy_rect := mirror_x_rect
-				mirror_xy_rect.position.y = (
-					Global.current_project.y_symmetry_point
-					- _rect.position.y
-					+ 1
-				)
-				mirror_xy_rect.end.y = Global.current_project.y_symmetry_point - _rect.end.y + 1
-				Global.canvas.selection.select_rect(mirror_xy_rect.abs(), operation)
+	# Handle mirroring
+	if Tools.horizontal_mirror:
+		var mirror_x_rect := _rect
+		mirror_x_rect.position.x = project.x_symmetry_point - _rect.position.x + 1
+		mirror_x_rect.end.x = project.x_symmetry_point - _rect.end.x + 1
+		Global.canvas.selection.select_rect(mirror_x_rect.abs(), operation)
 		if Tools.vertical_mirror:
-			var mirror_y_rect := _rect
-			mirror_y_rect.position.y = (
-				Global.current_project.y_symmetry_point
-				- _rect.position.y
-				+ 1
-			)
-			mirror_y_rect.end.y = Global.current_project.y_symmetry_point - _rect.end.y + 1
-			Global.canvas.selection.select_rect(mirror_y_rect.abs(), operation)
+			var mirror_xy_rect := mirror_x_rect
+			mirror_xy_rect.position.y = project.y_symmetry_point - _rect.position.y + 1
+			mirror_xy_rect.end.y = project.y_symmetry_point - _rect.end.y + 1
+			Global.canvas.selection.select_rect(mirror_xy_rect.abs(), operation)
+	if Tools.vertical_mirror:
+		var mirror_y_rect := _rect
+		mirror_y_rect.position.y = project.y_symmetry_point - _rect.position.y + 1
+		mirror_y_rect.end.y = project.y_symmetry_point - _rect.end.y + 1
+		Global.canvas.selection.select_rect(mirror_y_rect.abs(), operation)
 
-		Global.canvas.selection.commit_undo("Select", undo_data)
+	Global.canvas.selection.commit_undo("Select", undo_data)
 
 
 # Given an origin point and destination point, returns a rect representing

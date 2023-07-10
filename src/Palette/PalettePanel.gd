@@ -4,21 +4,21 @@ extends PanelContainer
 var palettes_path_id := {}
 var palettes_id_path := {}
 
-var edited_swatch_index = -1
+var edited_swatch_index := -1
+var edited_swatch_color := Color.transparent
 
-onready var palette_select := $PaletteVBoxContainer/PaletteButtons/PaletteSelect
-onready var add_palette_button := $PaletteVBoxContainer/PaletteButtons/AddPalette
-onready var palette_grid := find_node("PaletteGrid")
-onready var palette_scroll := $PaletteVBoxContainer/SwatchesContainer/PaletteScroll
+onready var palette_select := $"%PaletteSelect"
+onready var palette_grid := $"%PaletteGrid"
+onready var palette_scroll := $"%PaletteScroll"
 
-onready var add_color_button := $PaletteVBoxContainer/SwatchesContainer/ColorButtons/AddColor
-onready var delete_color_button := $PaletteVBoxContainer/SwatchesContainer/ColorButtons/DeleteColor
+onready var add_color_button := $"%AddColor"
+onready var delete_color_button := $"%DeleteColor"
 
-onready var edit_palette_dialog := $EditPaletteDialog
-onready var create_palette_dialog := $CreatePaletteDialog
+onready var edit_palette_dialog := $"%EditPaletteDialog"
+onready var create_palette_dialog := $"%CreatePaletteDialog"
 
-# Color picker button itself is hidden but it's popup is used to edit color swatches
-onready var hidden_color_picker := $HiddenColorPickerButton
+# Color picker button itself is hidden but its popup is used to edit color swatches
+onready var hidden_color_picker := $"%HiddenColorPickerButton"
 
 
 func _ready() -> void:
@@ -54,7 +54,8 @@ func select_palette(palette_path: String) -> void:
 	if palette_id != null:
 		palette_select.selected = palette_id
 		Palettes.select_palette(palette_path)
-		palette_grid.display_palette(Palettes.get_current_palette())
+		palette_grid.set_palette(Palettes.get_current_palette())
+		palette_scroll.resize_grid()
 		palette_scroll.set_sliders(Palettes.get_current_palette(), palette_grid.grid_window_origin)
 
 		var left_selected = Palettes.current_palette_get_selected_color_index(BUTTON_LEFT)
@@ -161,8 +162,9 @@ func _on_PaletteGrid_swatch_double_clicked(_mb: int, index: int, click_position:
 	var color = Palettes.current_palette_get_color(index)
 	edited_swatch_index = index
 	hidden_color_picker.color = color
+	hidden_color_picker.emit_signal("color_changed", hidden_color_picker.color)
 
-	# Open color picker popup with it's right bottom corner next to swatch
+	# Open color picker popup with its right bottom corner next to swatch
 	var popup = hidden_color_picker.get_popup()
 	popup.rect_position = click_position - popup.rect_size
 	popup.popup()
@@ -188,13 +190,18 @@ func _on_PaletteGrid_swatch_pressed(mouse_button: int, index: int) -> void:
 
 func _on_ColorPicker_color_changed(color: Color) -> void:
 	if edited_swatch_index != -1:
-		Palettes.current_palette_set_color(edited_swatch_index, color)
+		edited_swatch_color = color
 		palette_grid.set_swatch_color(edited_swatch_index, color)
 
 		if edited_swatch_index == Palettes.current_palette_get_selected_color_index(BUTTON_LEFT):
 			Tools.assign_color(color, BUTTON_LEFT)
 		if edited_swatch_index == Palettes.current_palette_get_selected_color_index(BUTTON_RIGHT):
 			Tools.assign_color(color, BUTTON_RIGHT)
+
+
+func _on_HiddenColorPickerButton_popup_closed():
+	# Saves edited swatch to palette file when color selection dialog is closed
+	Palettes.current_palette_set_color(edited_swatch_index, edited_swatch_color)
 
 
 func _on_EditPaletteDialog_deleted() -> void:

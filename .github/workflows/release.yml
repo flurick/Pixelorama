@@ -1,14 +1,15 @@
-name: "release"
+name: Stable release builds
 
 on:
   push:
     branches: [ release ]
 
 env:
-  GODOT_VERSION: 3.4.2
-  GODOT_VERSION_MAC: 3.4.2
+  GODOT_VERSION: 3.5.2
+  GODOT_VERSION_MAC: 3.5.2
+  RASPBERRY_PI_BUILDS_VERSION: 1.15.0
   EXPORT_NAME: Pixelorama
-  TAG: v0.9.2
+  TAG: v0.11
   BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
 
 jobs:
@@ -16,7 +17,7 @@ jobs:
     name: Windows Export 🗔
     runs-on: ubuntu-latest
     container:
-      image: docker://barichello/godot-ci:3.4.2
+      image: docker://barichello/godot-ci:3.5.2
     steps:
       - name: Setup WINE, rcedit and NSIS 🍷
         run: |
@@ -29,7 +30,7 @@ jobs:
           echo 'export/windows/wine = "/usr/bin/wine"' >> ~/.config/godot/editor_settings-3.tres
           echo 'export/windows/rcedit = "/github/home/.local/share/rcedit/rcedit-x64.exe"' >> ~/.config/godot/editor_settings-3.tres
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Setup 💻
@@ -42,13 +43,15 @@ jobs:
           godot -v --export "Windows Desktop 32-bit" ./build/windows-32bit/$EXPORT_NAME.exe
       - name: Copy pixelorama_data folder 📁
         run: |
+          rm ./pixelorama_data/.gdignore
+          cp -R ./pixelorama_data ./build/windows-64bit
+          cp -R ./pixelorama_data ./build/windows-32bit
           cp -R ./pixelorama_data ./build
-          rm ./build/pixelorama_data/.gdignore
       - name: Zip 🗜️
         working-directory: ./build
         run: |
-          zip windows-64bit.zip -rj windows-64bit && zip -r windows-64bit.zip pixelorama_data
-          zip windows-32bit.zip -rj windows-32bit && zip -r windows-32bit.zip pixelorama_data
+          zip -r Pixelorama.Windows-64bit.zip windows-64bit
+          zip -r Pixelorama.Windows-32bit.zip windows-32bit
       - name: Build installer 🔧
         run: |
           python3 ./installer/utils/po2nsi.py -i ./installer/pixelorama.nsi -o ./installer/pixelorama_loc.nsi -p ./installer/po -l "English" -v
@@ -73,10 +76,10 @@ jobs:
     name: Linux Export 🐧
     runs-on: ubuntu-latest
     container:
-      image: docker://barichello/godot-ci:3.4.2
+      image: docker://barichello/godot-ci:3.5.2
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Setup 💻
@@ -85,7 +88,7 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
       - name: Download Unofficial Godot Raspberry Pi 4 Builds 🍇
         run: |
-          wget https://github.com/hiulit/Unofficial-Godot-Engine-Raspberry-Pi/releases/download/v1.9.0/godot_${GODOT_VERSION}-stable_rpi4.zip
+          wget https://github.com/hiulit/Unofficial-Godot-Engine-Raspberry-Pi/releases/download/v${RASPBERRY_PI_BUILDS_VERSION}/godot_${GODOT_VERSION}-stable_rpi4.zip
           unzip -a godot_${GODOT_VERSION}-stable_rpi4.zip
       - name: Linux Build 🔧
         run: |
@@ -99,26 +102,26 @@ jobs:
           chmod +x ./build/linux-rpi4/$EXPORT_NAME.rpi4
       - name: Copy pixelorama_data folder 📁
         run: |
+          rm ./pixelorama_data/.gdignore
           cp -R ./pixelorama_data ./build/linux-64bit
-          rm ./build/linux-64bit/pixelorama_data/.gdignore
           cp -R ./pixelorama_data ./build/linux-32bit
-          rm ./build/linux-32bit/pixelorama_data/.gdignore
+          cp -R ./pixelorama_data ./build/linux-rpi4
       - name: Create tar.gz archive 🗜️
         run: |
           cd build
-          tar zcvf linux-64bit.tar.gz linux-64bit
-          tar zcvf linux-32bit.tar.gz linux-32bit
-          tar zcvf linux-rpi4.tar.gz linux-rpi4
+          tar zcvf Pixelorama.Linux-64bit.tar.gz linux-64bit
+          tar zcvf Pixelorama.Linux-32bit.tar.gz linux-32bit
+          tar zcvf Pixelorama.Linux-RPI4.tar.gz linux-rpi4
       - name: Upload Release Assets to itch.io 🎮
         run: |
-          butler push ./build/linux-64bit.tar.gz ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:linux-64 --userversion ${{env.TAG}}
-          butler push ./build/linux-32bit.tar.gz ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:linux-32 --userversion ${{env.TAG}}
-          butler push ./build/linux-rpi4.tar.gz ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:linux-rpi4 --userversion ${{env.TAG}}
+          butler push ./build/Pixelorama.Linux-64bit.tar.gz ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:linux-64 --userversion ${{env.TAG}}
+          butler push ./build/Pixelorama.Linux-32bit.tar.gz ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:linux-32 --userversion ${{env.TAG}}
+          butler push ./build/Pixelorama.Linux-RPI4.tar.gz ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:linux-rpi4 --userversion ${{env.TAG}}
       - name: Upload Release Asset 🚀
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./build/linux-*.tar.gz
+          file: ./build/Pixelorama.Linux-*.tar.gz
           tag: ${{env.TAG}}
           overwrite: true
           file_glob: true
@@ -128,7 +131,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Setup environment 🔧
@@ -186,10 +189,10 @@ jobs:
     name: Web Export 🌐
     runs-on: ubuntu-latest
     container:
-      image: docker://barichello/godot-ci:3.4.2
+      image: docker://barichello/godot-ci:3.5.2
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Setup 💻
@@ -202,11 +205,11 @@ jobs:
         run: |
           apt-get update && apt-get install -y rsync
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: build/web # The folder the action should deploy.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          single-commit: true
+          folder: build/web # The folder the action should deploy.
       - name: Upload Release Assets to itch.io 🎮
         run: |
           butler push ./build/web ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:web --userversion ${{env.TAG}}
